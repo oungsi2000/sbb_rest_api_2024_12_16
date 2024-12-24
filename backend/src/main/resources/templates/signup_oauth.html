@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <div class="my-3 border-bottom">
+        <div>
+            <h4>회원가입</h4>
+        </div>
+    </div>
+    <form th:action="@{/api/signup/oauth}" th:object="${userCreateOauthDto}" method="post">
+        <div th:if="${#fields.hasErrors()}">
+            <div class="alert alert-danger" th:errors="*{global}"></div>
+            <div class="alert alert-danger" th:errors="*{username}"></div>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">사용자ID</label>
+            <input type="text" th:field="*{username}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">회원가입</button>
+    </form>
+</div>
+
+</html>

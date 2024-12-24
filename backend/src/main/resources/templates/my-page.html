@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <div class="container">
+        <h1 class="mt-4">마이페이지</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                회원 정보
+            </div>
+            <div class="card-body">
+                <p><strong>이름:</strong> <span id="userName" th:text="${userInfo.username}"></span></p>
+                <p><strong>이메일:</strong> <span id="userEmail" th:text="${userInfo.email}"></span></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                나의 활동
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3>작성한 답변</h3>
+                        <ul id="userAnswers" class="list-unstyled">
+                            <li th:each="answer, loop : ${answers}">
+                                <a th:text="${answer.content}" th:href="@{/question/detail/{id}(id=${answer.question.id})}"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>작성한 질문</h3>
+                        <ul id="userQuestions" class="list-unstyled">
+                            <li th:each="question, loop : ${questions}">
+                                <a th:text="${question.title}" th:href="@{/question/detail/{id}(id=${question.id})}"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>작성한 댓글</h3>
+                        <ul id="userComments" class="list-unstyled">
+                            <li th:each="comment, loop : ${comments}">
+                                <a th:if ="${comment.question != null}" th:text="${comment.content}" th:href="@{/question/detail/{id}(id=${comment.question.id})}"></a>
+                                <a th:if ="${comment.answer != null}" th:text="${comment.content}" th:href="@{/question/detail/{id}(id=${comment.answer.question.id})}"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a th:if="${userInfo.oauthId == null}" th:href="@{/change-password}" id="changePasswordButton" class="btn btn-primary mt-3">비밀번호 변경</a>
+    </div>
+</div>
+
+</html>

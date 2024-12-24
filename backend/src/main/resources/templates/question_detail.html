@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+
+    <body>
+    <h2 class="py-2" th:text="${question.title}"></h2>
+    <h6 th:if="${question.category != null}" class="border-bottom py-1 mb-1" th:text="'카테고리 :' + ${question.category.getTitle()}"></h6>
+        <div class="card my-3">
+            <div class="card-body">
+                <div class="card-text" th:utext="${@commonUtil.markdown(question.content)}"></div>
+                <div class="d-flex justify-content-end">
+                    <div th:if="${question.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+                        <div class="mb-2">modified at</div>
+                        <div th:text="${#temporals.format(question.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    </div>
+                    <div class="badge bg-light text-dark p-2 text-start">
+                        <div class="mb-2">
+                            <span th:if="${question.author != null}" th:text="${question.author.username}"></span>
+                        </div>
+                        <div th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="my-3">
+            <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+               th:data-uri="@{|/question/vote/${question.id}|}">
+                추천
+                <span class="badge rounded-pill bg-success" th:text="${question.voter}"></span>
+            </a>
+            <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
+               sec:authorize="isAuthenticated()"
+               th:if="${question.author != null and (#authentication.getPrincipal().getName() == question.author.username or #authentication.getPrincipal().getName() == question.author.oauthId)}"
+               th:text="수정"></a>
+
+            <a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}"
+               class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+               th:if="${question.author != null and (#authentication.getPrincipal().getName() == question.author.username or #authentication.getPrincipal().getName() == question.author.oauthId)}"
+               th:text="삭제"></a>
+
+            <div class="comment-form mt-3 col-6" sec:authorize="isAuthenticated()">
+                <form th:object="${commentForm}" th:action="@{/question/create/comment}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="d-flex justify-content-lg-between align-items-center">
+                        <h4>댓글 작성</h4>
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </div>
+                    <div class="mb-3 mt-2">
+                        <textarea th:field="*{content}" class="form-control" rows="3"></textarea>
+                        <input th:field="*{id}" hidden th:value="${question.id}" type="text"/>
+                    </div>
+                </form>
+            </div>
+
+<!--댓글 반복 시작-->
+            <ul class="list-group col-6 mt-3">
+                <li class="list-group-item" th:each="comment, loop : ${questionComments}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1" th:text="${comment.author.username}" ></h5>
+                    </div>
+                    <p class="mb-1" th:text="${comment.content}"></p>
+                </li>
+            </ul>
+        </div>
+
+        <h5 class="border-bottom my-3 py-2"
+            th:text="| ${answerList.getTotalElements}개의 답변이 있습니다.|">
+        </h5>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <a href="?sortBy=present" class="sort btn btn-sm btn-outline-secondary">
+                    최신 순
+                </a>
+                <a href="?sortBy=mostVoted" class="sort btn btn-sm btn-outline-secondary">
+                    추천 순
+                </a>
+            </div>
+            <div th:if="${!answerList.isEmpty()}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${!answerList.hasPrevious} ? 'disabled'">
+                        <a class="page-link"
+                           href="javascript:void(0)" th:data-page="${answerList.number - 1}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+
+                    <li th:each="page: ${#numbers.sequence(0, answerList.totalPages - 1)}"
+                        th:if="${page >= answerList.number - 5 and page <= answerList.number+5}"
+                        th:classappend="${page == answerList.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link" href="javascript:void(0)" th:data-page="${page}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${!answerList.hasNext} ? 'disabled'">
+                        <a class="page-link" href="javascript:void(0)" th:data-page="${answerList.number+1}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+                <form method="get" id="searchForm">
+                    <input type="hidden" id="page" name="index" th:value="${answerList.number}">
+                </form>
+            </div>
+        </div>
+        <!-- 답변 반복 시작 -->
+        <div class="card my-3" th:each="answer, loop : ${answerList}">
+            <a th:id="|answer_${answer.id}|"></a>
+            <div class="card-body">
+                <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
+                <div class="d-flex justify-content-end">
+                    <div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+                        <div class="mb-2">modified at</div>
+                        <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    </div>
+                    <div class="badge bg-light text-dark p-2 text-start">
+                        <div class="mb-2">
+                            <span th:if="${answer.author != null}" th:text="${answer.author.username}"></span>
+                        </div>
+                        <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                    </div>
+                </div>
+                <div class="my-3">
+                    <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+                       th:data-uri="@{|/answer/vote/${answer.id}|}">
+                        추천
+                        <span class="badge rounded-pill bg-success" th:text="${answer.voter}"></span>
+                    </a>
+                    <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
+                       sec:authorize="isAuthenticated()"
+<!--                       이거 Try-catch 문으로 처리해햐하는데 rest로 갈아엎으니까 그냥 둠-->
+                       th:if="${answer.author != null and (#authentication.getPrincipal().getName() == answer.author.username or #authentication.getPrincipal().getName() == answer.author.oauthId)}"
+                       th:text="수정"></a>
+                    <a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
+                       class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                       th:if="${answer.author != null and (#authentication.getPrincipal().getName() == answer.author.username or #authentication.getPrincipal().getName() == answer.author.oauthId)}"
+                       th:text="삭제"></a>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:onclick="'showComment(' + ${loop.index} + ')'"
+                       th:text="댓글"></a>
+
+                    <div th:class="'comment-form mt-3 col-6 d-none answer-comment' + ${loop.index}" >
+                        <form th:object="${commentForm}" th:action="@{/answer/create/comment}" method="post" sec:authorize="isAuthenticated()">
+                            <input name="id" hidden th:value="${answer.id}" type="text"/>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <div class="d-flex justify-content-lg-between align-items-center">
+                                <h4>댓글 작성</h4>
+                                <button type="submit" class="btn btn-primary">등록</button>
+                            </div>
+                            <div class="mb-3 mt-2">
+                                <textarea th:field="*{content}" class="form-control" rows="3"></textarea>
+                            </div>
+                        </form>
+
+                        <ul class="list-group col-6 mt-3" th:with="answerComment = ${answerComments.get(answer.id)}">
+                            <li class="list-group-item" th:each="comment, loop : ${answerComment}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1" th:text="${comment.author.username}" ></h5>
+                                </div>
+                                <p class="mb-1" th:text="${comment.content}"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <form th:action="@{|/api/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
+            <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
+                <div th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+            </div>
+            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
+            <input sec:authorize="isAuthenticated()" type="submit" value="답변등록" class="btn btn-primary my-2">
+        </form>
+
+        <script layout:fragment="script" type='text/javascript'>
+
+            const delete_elements = document.getElementsByClassName("delete");
+            Array.from(delete_elements).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    if(confirm("정말로 삭제하시겠습니까?")) {
+                        location.href = this.dataset.uri;
+                    };
+                });
+            });
+
+            const recommend_elements = document.getElementsByClassName("recommend");
+            Array.from(recommend_elements).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    if(confirm("정말로 추천하시겠습니까?")) {
+                        location.href = this.dataset.uri;
+                    };
+                });
+            });
+
+            const page_elements = document.getElementsByClassName("page-link");
+            Array.from(page_elements).forEach(function(element) {
+            element.addEventListener('click', function() {
+                document.getElementById('page').value = this.dataset.page;
+                document.getElementById('searchForm').submit();
+                });
+            });
+        </script>
+        <script>
+            function showComment (index) {
+                const answerComment = document.getElementsByClassName("answer-comment"+index);
+                Array.from(answerComment).forEach((element)=>{
+                    if (element.className.includes('d-none')) {
+                        element.className = "comment-form mt-3 col-6 answer-comment" + index
+                    } else {
+                        element.className = "comment-form mt-3 col-6 d-none answer-comment" + index
+                    }
+                })
+            }
+        </script>
+    </body>
+</div>
+
+
+</html>

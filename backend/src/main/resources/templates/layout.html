@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <!-- sbb CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <title>Hello, sbb!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+</head>
+<body>
+<nav th:replace="~{navbar :: navbarFragment}"></nav>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<th:block layout:fragment="script"></th:block>
+<th:block layout:fragment="content"></th:block>
+<script th:src="@{/bootstrap.bundle.min.js}"></script>
+
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+</body>
+</html>
