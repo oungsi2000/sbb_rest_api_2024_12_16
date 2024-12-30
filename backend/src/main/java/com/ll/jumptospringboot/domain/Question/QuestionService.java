@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.exception.AlreadyVotedException;
+import com.ll.jumptospringboot.global.exception.AlreadyVotedException;
 import com.ll.jumptospringboot.domain.Category.Category;
 import com.ll.jumptospringboot.domain.Category.CategoryRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -18,7 +17,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.exception.DataNotFoundException;
+import com.ll.jumptospringboot.global.exception.DataNotFoundException;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

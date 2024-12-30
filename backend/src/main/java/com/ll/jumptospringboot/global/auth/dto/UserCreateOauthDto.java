@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.domain.oauth2;
+package com.ll.jumptospringboot.global.auth.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

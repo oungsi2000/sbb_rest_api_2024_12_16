@@ -1,11 +1,10 @@
 package com.ll.jumptospringboot.config;
 
-import com.ll.jumptospringboot.domain.oauth2.RegistrationChecker;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,9 +18,12 @@ public class MvcConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RegistrationChecker())
-            .addPathPatterns("/**") // 인터셉터를 적용할 URL 패턴
-            .excludePathPatterns("/oauth-signup/**", "/api/signup/oauth/**", "/login/**", "/**/*.css", "/error"); // 인터셉터에서 제외할 URL 패턴
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("http://localhost:3000") // 허용할 출처
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 허용할 HTTP 메서드
+            .allowedHeaders("*") // 허용할 헤더
+            .exposedHeaders("Authorization", "x-csrf-token", "Content-Type") // 필요한 헤더들을 나열
+            .allowCredentials(true); // 쿠키 전달 허용 (필요한 경우)
     }
 }

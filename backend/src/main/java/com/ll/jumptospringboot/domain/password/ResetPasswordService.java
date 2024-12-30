@@ -2,7 +2,7 @@ package com.ll.jumptospringboot.domain.password;
 
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserRepository;
-import com.ll.jumptospringboot.exception.PasswordNotSameException;
+import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

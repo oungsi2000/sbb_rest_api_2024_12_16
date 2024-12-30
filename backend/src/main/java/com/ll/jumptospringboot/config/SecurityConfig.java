@@ -1,13 +1,17 @@
 package com.ll.jumptospringboot.config;
 
-import com.ll.jumptospringboot.domain.oauth2.AuthFailureHandler;
-import com.ll.jumptospringboot.domain.oauth2.AuthSuccessHandler;
-import com.ll.jumptospringboot.domain.oauth2.OathService;
+import com.ll.jumptospringboot.global.auth.form.FormLoginFailureHandler;
+import com.ll.jumptospringboot.global.auth.form.FormLoginSuccessHandler;
+import com.ll.jumptospringboot.global.auth.oauth2.OAuthFailureHandler;
+import com.ll.jumptospringboot.global.auth.oauth2.OAuthSuccessHandler;
+import com.ll.jumptospringboot.global.auth.oauth2.OathService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,38 +27,48 @@ public class SecurityConfig {
     private OathService oathService; //
 
     @Autowired
-    private AuthFailureHandler authFailureHandler;
+    private OAuthFailureHandler OAuthFailureHandler;
 
     @Autowired
-    private AuthSuccessHandler authSuccessHandler;
+    private OAuthSuccessHandler authSuccessHandler;
 
+    @Autowired
+    private FormLoginFailureHandler formLoginFailureHandler;
+
+    @Autowired
+    private FormLoginSuccessHandler formLoginSuccessHandler;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-//            .csrf().disable()
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                 .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+
                 .formLogin((formLogin) -> formLogin
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/")
+                    .loginProcessingUrl("/api/v1/login")
+                    .failureHandler(formLoginFailureHandler)
+                    .successHandler(formLoginSuccessHandler)
+
                 ).logout((logout) -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/")
+                    .logoutUrl("/api/v1/logout")
                     .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "Authorization")
+
                 ).oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("http://localhost:3000/")
                 .loginPage("/login/oauth")
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(oathService)
                 )
                 .successHandler(authSuccessHandler)
-                .failureHandler(authFailureHandler)
+                .failureHandler(OAuthFailureHandler)
                 ).logout((logout) -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/")
-                    .invalidateHttpSession(true)
-                )
+                    .logoutUrl("/api/v1/logout")
+                    .logoutSuccessUrl("http://localhost:3000/")
+                    .deleteCookies("JSESSIONID", "Authorization")
+            )
         ;
         return http.build();
     }

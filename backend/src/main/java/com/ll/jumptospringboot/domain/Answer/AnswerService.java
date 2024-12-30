@@ -1,8 +1,7 @@
 package com.ll.jumptospringboot.domain.Answer;
 
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.exception.AlreadyVotedException;
-import com.ll.jumptospringboot.exception.DataNotFoundException;
+import com.ll.jumptospringboot.global.exception.AlreadyVotedException;
+import com.ll.jumptospringboot.global.exception.DataNotFoundException;
 import com.ll.jumptospringboot.domain.Question.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import lombok.RequiredArgsConstructor;

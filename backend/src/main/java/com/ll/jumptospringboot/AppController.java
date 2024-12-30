@@ -6,46 +6,61 @@ import com.ll.jumptospringboot.domain.Comment.Comment;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
 import com.ll.jumptospringboot.domain.Question.Question;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
-import com.ll.jumptospringboot.domain.User.SiteUser;
-import com.ll.jumptospringboot.domain.User.UserRepository;
-import com.ll.jumptospringboot.domain.User.UserService;
-import com.ll.jumptospringboot.domain.oauth2.OathService;
-import com.ll.jumptospringboot.domain.oauth2.UserCreateOauthDto;
+import com.ll.jumptospringboot.domain.User.*;
+import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
+import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
+import com.ll.jumptospringboot.global.auth.dto.UserCreateDto;
+import com.ll.jumptospringboot.global.auth.oauth2.OathService;
+import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
 import com.ll.jumptospringboot.domain.password.ResetPasswordService;
 import com.ll.jumptospringboot.domain.password.UserResetPasswordDto;
-import com.ll.jumptospringboot.exception.PasswordNotSameException;
-import jakarta.servlet.http.HttpSession;
+import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
+import com.ll.jumptospringboot.util.JwtProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.ll.jumptospringboot.domain.User.UserCreateForm;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/api/v1")
 public class AppController {
     private final QuestionService service;
     private final UserService userService;
-    private final UserCreateForm userCreateForm;
     private final ResetPasswordService resetPasswordService;
     private final UserRepository userRepository;
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final CommentService commentService;
-    private final OathService oathService;
+    private final JwtProvider jwtProvider;
+    @Value("${jwt.expiration_time}")
+    Long expirationTime;
 
-    @GetMapping("/")
+    private ResponseCookie setCookie(String name) {
+        String token = jwtProvider.regenerateToken(name, UserRole.USER);
+        return ResponseCookie.from("Authorization", token)
+            .maxAge(Math.toIntExact(expirationTime))
+            .path("/")
+            .httpOnly(true)
+            .build();
+    }
+
+    @GetMapping("/list")
     public String root(Model model, @RequestParam(value="page", defaultValue="0") int page,
                        @RequestParam(value = "kw", defaultValue = "") String kw,
                        @RequestParam(value = "sortby", defaultValue = "") String sortBy) {
@@ -56,74 +71,101 @@ public class AppController {
         return "list";
     }
 
+    @PostMapping(value = "/get-user-context")
+    @ResponseBody
+    public UserContextDto getUserContext(HttpServletRequest request) {
+        String authentication = null;
+        UserContextDto userContextDto = new UserContextDto();
 
-    @GetMapping("/signup")
-    public String signup(Model model) {
-        model.addAttribute("userCreateForm", userCreateForm);
-        return "signup_form";
-    }
-    @GetMapping("/oauth-signup")
-    public String oAuthSignup(UserCreateOauthDto userCreateOauthDto) {
-        return "signup_oauth";
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login_form";
-    }
-
-
-    @PostMapping("/api/signup")
-    public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return "signup_form";
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Authorization")) {
+                    authentication = cookie.getValue();
+                }
+            }
         }
 
-        if (!userCreateForm.getPassword1().equals(userCreateForm.getPassword2())) {
+        if (authentication == null){
+            userContextDto.setName("null");
+            userContextDto.setRole(UserRole.ANONYMOUS);
+            return userContextDto;
+        }
+        try {
+            return jwtProvider.validate(authentication);
+        } catch (Exception e) {
+            userContextDto.setName("null");
+            userContextDto.setRole(UserRole.ANONYMOUS);
+            return userContextDto;
+        }
+    }
+
+
+    @PostMapping("/signup")
+    @ResponseBody
+    public ResponseEntity<AuthResponse> signup(@Valid UserCreateDto userCreateDto, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!userCreateDto.getPassword1().equals(userCreateDto.getPassword2())) {
             bindingResult.rejectValue("password2", "passwordInCorrect",
                 "2개의 패스워드가 일치하지 않습니다.");
-            return "signup_form";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            userService.create(userCreateForm.getUsername(),
-            userCreateForm.getEmail(), userCreateForm.getPassword1());
+            userService.create(userCreateDto.getUsername(),
+            userCreateDto.getEmail(), userCreateDto.getPassword1());
         } catch(DataIntegrityViolationException e) {
-            e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return "signup_form";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }catch(Exception e) {
-            e.printStackTrace();
             bindingResult.reject("signupFailed", e.getMessage());
-            return "signup_form";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/";
+        AuthResponse authResponse = new AuthResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, setCookie(userCreateDto.getUsername()).toString())
+            .body(authResponse);
     }
 
-    @PostMapping("/api/signup/oauth")
-    public String oauthSignup(@Valid UserCreateOauthDto userCreateOauthDto, BindingResult bindingResult, Principal principal) {
+    @PostMapping("/signup/oauth")
+    @ResponseBody
+    public ResponseEntity<AuthResponse> oauthSignup(@Valid UserCreateOauthDto userCreateOauthDto, BindingResult bindingResult, Principal principal, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
-            return "signup_oauth";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
         try {
-            String googleId = principal.getName();
-            SiteUser user = userService.getUserByOauth(googleId);
-            userCreateOauthDto.setEmail(user.getEmail());
+            UserContextDto userContextDto = getUserContext(request);
+            String email = userContextDto.getName();
+            SiteUser user = userService.getUserByEmail(email);
+            userCreateOauthDto.setEmail(email);
+            userCreateOauthDto.setOauthId(user.getOauthId());
             userCreateOauthDto.setProviderId(user.getProviderId());
             userService.createOauth(userCreateOauthDto);
 
-        }catch(DataIntegrityViolationException e) {
-            e.printStackTrace();
+        } catch(DataIntegrityViolationException e) {
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return "signup_oauth";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }catch(Exception e) {
-            e.printStackTrace();
             bindingResult.reject("signupFailed", e.getMessage());
-            return "signup_oauth";
+            AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/";
+        AuthResponse authResponse = new AuthResponse("성공", HttpServletResponse.SC_OK);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, setCookie(userCreateOauthDto.getUsername()).toString())
+            .body(authResponse);
     }
 
     @GetMapping("/reset-password")
@@ -144,7 +186,6 @@ public class AppController {
         model.addAttribute("comments", comments);
         return "my-page";
     }
-
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/change-password")

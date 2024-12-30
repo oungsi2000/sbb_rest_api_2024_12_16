@@ -1,19 +1,16 @@
-package com.ll.jumptospringboot.domain.oauth2;
+package com.ll.jumptospringboot.global.auth.oauth2;
 
 
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserRepository;
-import com.ll.jumptospringboot.exception.UserDuplicateException;
-import jakarta.servlet.http.HttpSession;
+import com.ll.jumptospringboot.global.exception.UserDuplicateException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -43,9 +40,6 @@ public class OathService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                 throw new UserDuplicateException("이미 다른 이메일로 가입하셨습니다");
             }
         }
-
-        Authentication authentication = new OAuth2AuthenticationToken(oAuth2User, null, registrationId);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return oAuth2User;
     }

@@ -1,8 +1,8 @@
 package com.ll.jumptospringboot.domain.User;
 
-import com.ll.jumptospringboot.domain.oauth2.UserCreateOauthDto;
-import com.ll.jumptospringboot.exception.DataNotFoundException;
-import org.springframework.context.annotation.Lazy;
+import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
+import com.ll.jumptospringboot.global.exception.DataNotFoundException;
+import com.ll.jumptospringboot.util.JwtProvider;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +15,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     public SiteUser create(String username, String email, String password) {
         SiteUser user = new SiteUser();
@@ -37,6 +38,7 @@ public class UserService {
         } else {
             user.get().setUsername(userCreateOauthDto.getUsername());
             userRepository.save(user.get());
+
             return user.get();
         }
     }
@@ -53,8 +55,9 @@ public class UserService {
         }
     }
 
-    public SiteUser getUserByOauth(String oauthId) {
-        Optional<SiteUser> siteUser = this.userRepository.findByOauthId(oauthId);
+
+    public SiteUser getUserByEmail(String email) {
+        Optional<SiteUser> siteUser = this.userRepository.findByEmail(email);
         if (siteUser.isPresent()) {
             return siteUser.get();
         } else {
