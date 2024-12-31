@@ -79,7 +79,14 @@ public class AnswerService {
         }
     }
 
-    public List<Answer> getAnswerByUser(SiteUser user) {
-        return answerRepository.findAllByAuthor(user);
+    public List<AnswerDto> getAnswerByUser(SiteUser user) {
+        return answerRepository.findAllByAuthor(user).stream().map(
+            AnswerService::toAnswerDto
+        ).toList();
+    }
+    public static AnswerDto toAnswerDto(Answer answer) {
+        AnswerDto answerDto = new AnswerDto(answer);
+        answerDto.setQuestionId(answer.getQuestion().getId());
+        return answerDto;
     }
 }

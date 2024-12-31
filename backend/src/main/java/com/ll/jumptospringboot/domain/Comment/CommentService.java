@@ -54,7 +54,21 @@ public class CommentService {
         return result;
     }
 
-    public List<Comment> getCommentByUser(SiteUser user) {
-        return commentRepository.findAllByAuthor(user);
+    public List<CommentDto> getCommentByUser(SiteUser user) {
+        return commentRepository.findAllByAuthor(user).stream().map(
+            CommentService::toCommentDto
+        ).toList();
+    }
+    public static CommentDto toCommentDto (Comment comment) {
+        CommentDto commentDto = new CommentDto(comment);
+
+        if (comment.getAnswer() != null) {
+            commentDto.setAnswerId(comment.getAnswer().getId());
+        }
+
+        if (comment.getQuestion() != null) {
+            commentDto.setQuestionId(comment.getQuestion().getId());
+        }
+        return commentDto;
     }
 }

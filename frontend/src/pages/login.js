@@ -49,7 +49,7 @@ function Login() {
                 </div>
                 <button type="submit" className="btn btn-primary">로그인</button>
             </form>
-            <a className="btn btn-link text-decoration-underline mt-3" href="/">비밀번호 찾기</a>
+            <a className="btn btn-link text-decoration-underline mt-3" href="/reset-password">비밀번호 찾기</a>
         </div>
     )
 }

@@ -1,11 +1,14 @@
 package com.ll.jumptospringboot;
 
 import com.ll.jumptospringboot.domain.Answer.Answer;
+import com.ll.jumptospringboot.domain.Answer.AnswerDto;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
 import com.ll.jumptospringboot.domain.Comment.Comment;
+import com.ll.jumptospringboot.domain.Comment.CommentDto;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
 import com.ll.jumptospringboot.domain.Question.GetListDto;
 import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Question.QuestionDto;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
 import com.ll.jumptospringboot.domain.User.*;
 import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
@@ -38,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/api/v1")
 public class AppController {
     private final QuestionService service;
@@ -62,7 +65,6 @@ public class AppController {
     }
 
     @PostMapping("/list")
-    @ResponseBody
     public ResponseEntity<Page<Question>> root(@RequestBody GetListDto getListDto) {
         int page = getListDto.getPage();
         String kw = getListDto.getKw() != null ? getListDto.getKw() : "";
@@ -73,7 +75,6 @@ public class AppController {
     }
 
     @PostMapping(value = "/get-user-context")
-    @ResponseBody
     public UserContextDto getUserContext(HttpServletRequest request) {
         String authentication = null;
         UserContextDto userContextDto = new UserContextDto();
@@ -103,7 +104,6 @@ public class AppController {
 
 
     @PostMapping("/signup")
-    @ResponseBody
     public ResponseEntity<AuthResponse> signup(@Valid UserCreateDto userCreateDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -137,7 +137,6 @@ public class AppController {
     }
 
     @PostMapping("/signup/oauth")
-    @ResponseBody
     public ResponseEntity<AuthResponse> oauthSignup(@Valid UserCreateOauthDto userCreateOauthDto, BindingResult bindingResult, Principal principal, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
@@ -169,21 +168,16 @@ public class AppController {
             .body(authResponse);
     }
 
-    @GetMapping("/reset-password")
-    public String findPassword() {
-        return "reset-password";
-    }
 
     @JwtAuthorize(role=UserRole.USER)
     @PostMapping("/my-page")
-    @ResponseBody
     public ResponseEntity<UserDataDto> myPage(HttpServletRequest request) {
         UserDataDto userDataDto = new UserDataDto();
         UserContextDto userContext = getUserContext(request);
         SiteUser user = userService.getUser(userContext.getName());
-        List<Question> questions = questionService.getQuestionByUser(user);
-        List<Answer> answers = answerService.getAnswerByUser(user);
-        List<Comment> comments = commentService.getCommentByUser(user);
+        List<QuestionDto> questions = questionService.getQuestionByUser(user);
+        List<AnswerDto> answers = answerService.getAnswerByUser(user);
+        List<CommentDto> comments = commentService.getCommentByUser(user);
         userDataDto.setUser(user);
         userDataDto.setQuestions(questions);
         userDataDto.setAnswers(answers);
@@ -192,14 +186,8 @@ public class AppController {
         return ResponseEntity.ok().body(userDataDto);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/change-password")
-    public String changePassword(UserResetPasswordDto userResetPasswordDto) {
-        return "change_password";
-    }
 
-    @PostMapping("/api/reset-password")
-    @ResponseBody
+    @PostMapping("/reset-password")
     public Map<String, String> resetPassword(@RequestParam(value = "email") String email) {
         try {
             return resetPasswordService.generateTempPassword(email);
@@ -209,14 +197,15 @@ public class AppController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/api/change-password")
-    @ResponseBody
+    @JwtAuthorize(role=UserRole.USER)
+    @PostMapping("/change-password")
     public Map<String, String> changePassword(@RequestParam(value="password") String password,
                                               @RequestParam(value="newPassword") String newPassword,
                                               @RequestParam(value="newPasswordConfirm") String newPasswordConfirm,
-                                              Principal principal) {
-        SiteUser user = userRepository.findByusername(principal.getName()).get();
+                                              HttpServletRequest request
+                               ) {
+        UserContextDto userContext = getUserContext(request);
+        SiteUser user = userRepository.findByusername(userContext.getName()).get();
         try {
             return resetPasswordService.changePassword(password, newPassword, user);
         } catch (PasswordNotSameException e) {

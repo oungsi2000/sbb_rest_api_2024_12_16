@@ -44,7 +44,7 @@ function Mypage() {
                                 <ul id="userAnswers" class="list-unstyled">
                                     {userData.answers.map((answer) => (
                                         <li>
-                                            <a href={`/question/detail/${answer.question.id}`}>{answer.content}</a>
+                                            <a href={`/question/detail/${answer.questionId}`}>{answer.content}</a>
                                         </li>
                                     ))}
                                 </ul>
@@ -64,8 +64,8 @@ function Mypage() {
                                 <ul id="userComments" class="list-unstyled">
                                     {userData.comments.map(comment => (
                                         <li>
-                                            {comment.question != null && <a href={`/question/detail/${comment.question.id}`}>{comment.content}</a>}
-                                            {comment.answer != null && <a href={`/question/detail/${comment.answer.question.id}`}>{comment.content}</a>}
+                                            {comment.questionId != null && <a href={`/question/detail/${comment.questionId}`}>{comment.content}</a>}
+                                            {comment.answerId != null && <a href={`/question/detail/${comment.answerId}`}>{comment.content}</a>}
                                         </li>
                                     ))}
                                 </ul>

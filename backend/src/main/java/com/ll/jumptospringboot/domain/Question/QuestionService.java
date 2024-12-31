@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.ll.jumptospringboot.domain.Answer.AnswerDto;
+import com.ll.jumptospringboot.domain.Answer.AnswerService;
+import com.ll.jumptospringboot.domain.Comment.Comment;
+import com.ll.jumptospringboot.domain.Comment.CommentDto;
+import com.ll.jumptospringboot.domain.Comment.CommentService;
 import com.ll.jumptospringboot.global.exception.AlreadyVotedException;
 import com.ll.jumptospringboot.domain.Category.Category;
 import com.ll.jumptospringboot.domain.Category.CategoryRepository;
@@ -122,7 +127,32 @@ public class QuestionService {
         };
     }
 
-    public List<Question> getQuestionByUser(SiteUser user) {
-        return questionRepository.findAllByAuthor(user);
+    public List<QuestionDto> getQuestionByUser(SiteUser user) {
+        return questionRepository.findAllByAuthor(user).stream().map(
+            this::toQuestionDto
+        ).toList();
+    }
+
+    public QuestionDto toQuestionDto(Question question) {
+        QuestionDto questionDto = new QuestionDto(question);
+        List<AnswerDto> answerDtoList = new ArrayList<>();
+        List<CommentDto> commentDtoList = new ArrayList<>();
+
+        question.getAnswerList().forEach(
+            answer -> {
+                AnswerDto answerDto = AnswerService.toAnswerDto(answer);
+                answerDtoList.add(answerDto);
+            }
+        );
+        question.getComments().forEach(
+            comment -> {
+                CommentDto commentDto = CommentService.toCommentDto(comment);
+                commentDtoList.add(commentDto);
+            }
+        );
+        questionDto.setAnswerList(answerDtoList);
+        questionDto.setComments(commentDtoList);
+        return questionDto;
+
     }
 }

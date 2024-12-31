@@ -19,9 +19,7 @@ import java.io.PrintWriter;
 public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private JwtProvider jwtProvider;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${jwt.expiration_time}")
-    Long expirationTime;
+
     @Autowired
     private ResponseHelper responseHelper;
 

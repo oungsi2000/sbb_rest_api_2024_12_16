@@ -8,6 +8,8 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import SignupOAuth2 from './pages/signupOAuth2';
 import List from './pages/list';
 import Mypage from './pages/mypage';
+import ChangePassword from './pages/changePassword';
+import ResetPassword from './pages/resetPassword';
 
 
 
@@ -38,6 +40,8 @@ function App() {
           <Route path="/signup-oauth" element={<SignupOAuth2 />}/>
           <Route path="/my-page" element={<Mypage />}/>
           <Route path="/" element={<List />}/>
+          <Route path="/change-password" element={<ChangePassword />}/>
+          <Route path="/reset-password" element={<ResetPassword />}/>
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>
