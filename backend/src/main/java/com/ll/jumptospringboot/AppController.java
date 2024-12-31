@@ -175,17 +175,21 @@ public class AppController {
     }
 
     @JwtAuthorize(role=UserRole.USER)
-    @GetMapping("/my-page")
-    public String myPage(Model model, Principal principal) {
-        SiteUser user = userService.getUser(principal.getName());
+    @PostMapping("/my-page")
+    @ResponseBody
+    public ResponseEntity<UserDataDto> myPage(HttpServletRequest request) {
+        UserDataDto userDataDto = new UserDataDto();
+        UserContextDto userContext = getUserContext(request);
+        SiteUser user = userService.getUser(userContext.getName());
         List<Question> questions = questionService.getQuestionByUser(user);
         List<Answer> answers = answerService.getAnswerByUser(user);
         List<Comment> comments = commentService.getCommentByUser(user);
-        model.addAttribute("userInfo", user) ;
-        model.addAttribute("questions", questions);
-        model.addAttribute("answers", answers);
-        model.addAttribute("comments", comments);
-        return "my-page";
+        userDataDto.setUser(user);
+        userDataDto.setQuestions(questions);
+        userDataDto.setAnswers(answers);
+        userDataDto.setComments(comments);
+
+        return ResponseEntity.ok().body(userDataDto);
     }
 
     @PreAuthorize("isAuthenticated()")

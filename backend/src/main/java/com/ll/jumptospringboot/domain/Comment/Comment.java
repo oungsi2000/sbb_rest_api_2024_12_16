@@ -30,6 +30,7 @@ public class Comment {
     private Question question;
 
     @ManyToOne
+    @JsonBackReference
     private Answer answer;
 
     private LocalDateTime createDate;

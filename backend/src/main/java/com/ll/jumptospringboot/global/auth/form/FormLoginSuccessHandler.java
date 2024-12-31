@@ -31,7 +31,6 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(responseHelper.setCookie(token));
 
         try (PrintWriter writer = responseHelper.setResponse(response)) {
-            response.sendRedirect("http://localhost:3000/");
             writer.flush();
         }
 

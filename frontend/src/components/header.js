@@ -25,7 +25,7 @@ function Header() {
                             <a className="nav-link" href="/signup">회원가입</a>
                         </li>
                         <li className="nav-item">
-                            {user.role === "USER" && <a className="nav-link" href="/">마이페이지</a>}
+                            {user.role === "USER" && <a className="nav-link" href="/my-page">마이페이지</a>}
                         </li>
                     </ul>
                 </div>

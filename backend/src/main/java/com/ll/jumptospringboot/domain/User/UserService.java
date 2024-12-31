@@ -48,7 +48,7 @@ public class UserService {
         if (siteUser.isPresent()) {
             return siteUser.get();
         } else {
-            Optional<SiteUser> siteUserByOauth = this.userRepository.findByOauthId(username);
+            Optional<SiteUser> siteUserByOauth = this.userRepository.findByEmail(username);
             if (siteUserByOauth.isPresent()) return siteUserByOauth.get();
 
             throw new DataNotFoundException("siteuser not found");
