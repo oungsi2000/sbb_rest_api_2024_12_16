@@ -4,7 +4,6 @@ import { UserContext } from '../helper/getUserContext';
 
 function Header() {
     const { user, setUser } = useContext(UserContext)
-    console.log(user)
    
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">

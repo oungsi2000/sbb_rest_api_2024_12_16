@@ -2,7 +2,7 @@ package com.ll.jumptospringboot.domain.User;
 
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
 import com.ll.jumptospringboot.global.exception.DataNotFoundException;
-import com.ll.jumptospringboot.util.JwtProvider;
+import com.ll.jumptospringboot.global.util.JwtProvider;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

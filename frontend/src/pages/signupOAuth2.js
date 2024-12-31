@@ -36,8 +36,8 @@ function SignupOAuth2() {
 
     return (
         <>
-            {user.role === "TEMPORARY_USER" && <div class="container my-3">
-                <div class="my-3 border-bottom">
+            {user.role === "TEMPORARY_USER" && <div className="container my-3">
+                <div className="my-3 border-bottom">
                     <div>
                         <h4>회원가입</h4>
                     </div>
@@ -45,14 +45,14 @@ function SignupOAuth2() {
                 <form method="post" onSubmit={signupOAuth2}>
                     {err !== null && 
                     <div>
-                        <div class="alert alert-danger">{err.message}</div>
+                        <div className="alert alert-danger">{err.message}</div>
                     </div>}
-                    <div class="mb-3">
-                        <label for="username" class="form-label">사용자ID</label>
-                        <input type="text" name="username" class="form-control" />
+                    <div className="mb-3">
+                        <label for="username" className="form-label">사용자ID</label>
+                        <input type="text" name="username" className="form-control" />
                     </div>
 
-                    <button type="submit" class="btn btn-primary">회원가입</button>
+                    <button type="submit" className="btn btn-primary">회원가입</button>
                 </form>
             </div>}
         </>

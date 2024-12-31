@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.util;
+package com.ll.jumptospringboot.global.util;
 
 import com.ll.jumptospringboot.domain.User.UserRole;
 import com.ll.jumptospringboot.global.auth.dto.UserContextDto;

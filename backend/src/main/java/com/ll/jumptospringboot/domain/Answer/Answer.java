@@ -3,6 +3,8 @@ package com.ll.jumptospringboot.domain.Answer;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ll.jumptospringboot.domain.Question.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import jakarta.persistence.*;
@@ -27,6 +29,7 @@ public class Answer {
     private LocalDateTime createDate;
 
     @ManyToOne
+    @JsonBackReference
     private Question question;
 
     @ManyToOne

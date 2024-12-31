@@ -4,18 +4,19 @@ import com.ll.jumptospringboot.domain.Answer.Answer;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
 import com.ll.jumptospringboot.domain.Comment.Comment;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
+import com.ll.jumptospringboot.domain.Question.GetListDto;
 import com.ll.jumptospringboot.domain.Question.Question;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
 import com.ll.jumptospringboot.domain.User.*;
 import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
 import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateDto;
-import com.ll.jumptospringboot.global.auth.oauth2.OathService;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
 import com.ll.jumptospringboot.domain.password.ResetPasswordService;
 import com.ll.jumptospringboot.domain.password.UserResetPasswordDto;
 import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
-import com.ll.jumptospringboot.util.JwtProvider;
+import com.ll.jumptospringboot.global.util.JwtAuthorize;
+import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,15 +61,15 @@ public class AppController {
             .build();
     }
 
-    @GetMapping("/list")
-    public String root(Model model, @RequestParam(value="page", defaultValue="0") int page,
-                       @RequestParam(value = "kw", defaultValue = "") String kw,
-                       @RequestParam(value = "sortby", defaultValue = "") String sortBy) {
-
+    @PostMapping("/list")
+    @ResponseBody
+    public ResponseEntity<Page<Question>> root(@RequestBody GetListDto getListDto) {
+        int page = getListDto.getPage();
+        String kw = getListDto.getKw() != null ? getListDto.getKw() : "";
+        String sortBy = getListDto.getSortBy() != null ? getListDto.getSortBy() : "";
         Page<Question> paging = service.getList(page, kw, sortBy);
-        model.addAttribute("questionList", paging);
-        model.addAttribute("kw", kw);
-        return "list";
+
+        return ResponseEntity.ok().body(paging);
     }
 
     @PostMapping(value = "/get-user-context")
@@ -173,7 +174,7 @@ public class AppController {
         return "reset-password";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @JwtAuthorize(role=UserRole.USER)
     @GetMapping("/my-page")
     public String myPage(Model model, Principal principal) {
         SiteUser user = userService.getUser(principal.getName());

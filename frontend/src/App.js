@@ -6,6 +6,7 @@ import Signup from './pages/signup';
 import { getUserContext, UserContext } from './helper/getUserContext';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import SignupOAuth2 from './pages/signupOAuth2';
+import List from './pages/list';
 
 
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signup-oauth" element={<SignupOAuth2 />}/>
+          <Route path="/" element={<List />}/>
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>

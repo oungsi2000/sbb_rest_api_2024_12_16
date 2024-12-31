@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ll.jumptospringboot.domain.Answer.Answer;
 import com.ll.jumptospringboot.domain.Category.Category;
 import com.ll.jumptospringboot.domain.Comment.Comment;
@@ -29,7 +30,8 @@ public class Question {
 
     private LocalDateTime createDate;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
     private List<Answer> answerList;
 
     @ManyToOne
@@ -44,6 +46,7 @@ public class Question {
     private Set<SiteUser> voterInfo;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
     private List<Comment> comments;
 
     @Column(columnDefinition = "integer default 0", nullable = false)

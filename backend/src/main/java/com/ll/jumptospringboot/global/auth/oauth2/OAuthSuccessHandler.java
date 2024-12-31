@@ -1,26 +1,20 @@
 package com.ll.jumptospringboot.global.auth.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserRepository;
 import com.ll.jumptospringboot.domain.User.UserRole;
 import com.ll.jumptospringboot.domain.User.UserService;
-import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
 import com.ll.jumptospringboot.global.auth.standard.ResponseHelper;
-import com.ll.jumptospringboot.util.JwtProvider;
-import jakarta.servlet.http.Cookie;
+import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 

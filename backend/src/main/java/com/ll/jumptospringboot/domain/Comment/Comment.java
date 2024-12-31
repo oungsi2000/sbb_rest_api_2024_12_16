@@ -1,5 +1,6 @@
 package com.ll.jumptospringboot.domain.Comment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ll.jumptospringboot.domain.Answer.Answer;
 import com.ll.jumptospringboot.domain.Question.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
@@ -25,6 +26,7 @@ public class Comment {
     private SiteUser author;
 
     @ManyToOne
+    @JsonBackReference
     private Question question;
 
     @ManyToOne

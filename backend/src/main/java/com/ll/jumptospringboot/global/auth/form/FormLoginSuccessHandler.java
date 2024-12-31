@@ -2,10 +2,8 @@ package com.ll.jumptospringboot.global.auth.form;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.jumptospringboot.domain.User.UserRole;
-import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
 import com.ll.jumptospringboot.global.auth.standard.ResponseHelper;
-import com.ll.jumptospringboot.util.JwtProvider;
-import jakarta.servlet.http.Cookie;
+import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

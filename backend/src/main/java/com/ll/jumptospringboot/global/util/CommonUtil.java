@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.util;
+package com.ll.jumptospringboot.global.util;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
