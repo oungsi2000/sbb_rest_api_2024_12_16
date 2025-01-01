@@ -1,6 +1,5 @@
 package com.ll.jumptospringboot;
 
-import com.ll.jumptospringboot.domain.Answer.entity.Answer;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
 import com.ll.jumptospringboot.domain.Question.QuestionRepository;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
@@ -58,6 +57,17 @@ class JumpToSpringBootApplicationTests {
         Question question = this.questionService.getQuestion(1);
         this.questionService.getQuestion(1);
         System.out.println(question.getAnswerList().size());
+    }
+
+    @Test
+    @DisplayName("리스트 가져오기 속도 확인")
+    void t4() {
+        long st = System.currentTimeMillis();
+        Page<Question> paging = questionService.getList(0, "d", "recent-answer");
+        long et = System.currentTimeMillis();
+        long difference = et-st;
+        System.out.println(difference + "ms");
+
     }
 
 

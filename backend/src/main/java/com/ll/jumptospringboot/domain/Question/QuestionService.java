@@ -56,8 +56,13 @@ public class QuestionService {
         }
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        Specification<Question> spec = search(kw);
-        return this.questionRepository.findAll(spec, pageable);
+        if (kw != null) {
+            Specification<Question> spec = search(kw);
+            return this.questionRepository.findAll(spec, pageable);
+        } else {
+            return this.questionRepository.findAll(pageable);
+        }
+
     }
 
     public Question getQuestion(Integer id) {
@@ -66,17 +71,6 @@ public class QuestionService {
             setView(question.get());
             question.get().getAnswerList().sort((a,b)->b.getVoter() - a.getVoter());
             return question.get();
-        } else {
-            throw new DataNotFoundException("question not found");
-        }
-    }
-
-    public QuestionDto getQuestionDto(Integer id) {
-        Optional<Question> question = questionRepository.findById(id);
-        if (question.isPresent()) {
-            setView(question.get());
-            question.get().getAnswerList().sort((a,b)->b.getVoter() - a.getVoter());
-            return toQuestionDto(question.get());
         } else {
             throw new DataNotFoundException("question not found");
         }

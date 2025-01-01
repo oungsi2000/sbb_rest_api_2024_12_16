@@ -33,7 +33,7 @@ public class JwtAuthorizeImpl {
         UserContextDto userContext = appController.getUserContext(request);
 
         if (userContext.getRole().compareTo(role) > 0) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "권한이 없습니다.");
         }
         Object proceed = joinPoint.proceed();
 
