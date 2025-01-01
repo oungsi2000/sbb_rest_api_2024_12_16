@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 
 
 /**
- * @param {Array} role - 사용자의 이름
+ * @param {Array} role - 해당 페이지를 열람할 권한
  */
 
 function Authorize(props) {
