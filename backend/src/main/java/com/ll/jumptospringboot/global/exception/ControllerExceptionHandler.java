@@ -2,6 +2,7 @@ package com.ll.jumptospringboot.global.exception;
 
 import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,5 +37,21 @@ public class ControllerExceptionHandler {
         log.error("UserDuplicateException", e);
         AuthResponse authResponse = new AuthResponse(e.getMessage());
         return ResponseEntity.badRequest().body(authResponse);
+    }
+
+    //예상치 못한 데이터베이스 예외 로길
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<AuthResponse>DataIntegrityViolationExceptionHandler(DataIntegrityViolationException e) {
+        log.error("DataIntegrityViolationException", e);
+        AuthResponse authResponse = new AuthResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(authResponse);
+    }
+
+    //최상위 예외 클래스를 핸들링하여 로그가 클라이언트에게 빠지지 않도록 함
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<AuthResponse>runTimeExceptionHandler(RuntimeException e) {
+        log.error("예상치못한 예외", e);
+        AuthResponse authResponse = new AuthResponse(e.getMessage());
+        return ResponseEntity.internalServerError().body(authResponse);
     }
 }

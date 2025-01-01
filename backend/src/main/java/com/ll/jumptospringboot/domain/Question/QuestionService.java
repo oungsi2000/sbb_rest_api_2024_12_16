@@ -114,6 +114,7 @@ public class QuestionService {
         this.questionRepository.save(question);
     }
 
+    //검색 쿼리 CriteriaBuilder로 빌드
     private Specification<Question> search(String kw) {
         return new Specification<>() {
             private static final long serialVersionUID = 1L;

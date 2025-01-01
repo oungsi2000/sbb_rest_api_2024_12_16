@@ -432,6 +432,8 @@ function QuestionDetail() {
         const response = await fetch(url, {
             method: "POST"
         })
+        
+        if (response.status === 404) {return null}
         const data = await response.json()
         return data
     }
