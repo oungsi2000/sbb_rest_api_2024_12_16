@@ -12,6 +12,7 @@ import ResetPassword from './pages/resetPassword';
 import QuestionDetail from './pages/questionDetail';
 import QuestionCreate from './pages/questionCreate';
 import AnswerForm from './pages/answerForm'
+import Authorize from './components/authorize';
 
 
 
@@ -39,17 +40,17 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/signup-oauth" element={<SignupOAuth2 />} />
-          <Route path="/my-page" element={<Mypage />} />
+          <Route path="/signup-oauth" element={<Authorize componet={SignupOAuth2} role={"TEMPORARY_USER"} />} />
+          <Route path="/my-page" element={<Authorize componet={Mypage} role={["USER", "ADMIN"]}/>} />
           <Route path="/" element={<List />} />
-          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/change-password" element={<Authorize componet={ChangePassword} role={["USER", "ADMIN"]}/>} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/question">
             <Route path="detail/:id" element={<QuestionDetail />} />
-            <Route path="create" element={<QuestionCreate />} />
-            <Route path="modify/:id" element={<QuestionCreate />} />
+            <Route path="create" element={<Authorize componet={QuestionCreate} role={["USER", "ADMIN"]} />} />
+            <Route path="modify/:id" element={<Authorize componet={QuestionCreate} role={["USER", "ADMIN"]} />} />
           </Route>
-          <Route path="/answer/modify/:id" element={<AnswerForm />} />
+          <Route path="/answer/modify/:id" element={<Authorize componet={AnswerForm} role={["USER", "ADMIN"]} />} />
 
         </Routes>
       </UserContext.Provider>

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { useParams, useLocation } from 'react-router-dom';
+import { useEffect, useState, useContext } from "react";
+import { useParams, useLocation, Navigate } from 'react-router-dom';
 import { rootUrl, restServerUrl } from "../static/urlContext";
 import { event2FormData } from "../helper/event2FormData";
+import { UserContext } from '../helper/getUserContext';
+
 
 
 function CategoryModal() {
@@ -69,6 +71,8 @@ function QuestionCreate() {
     const [err, setErr] = useState(null)
     const [categories, setCategories] = useState(null)
     const [previousContent, setpreviousContent] = useState(null)
+    const { user, setUser } = useContext(UserContext)
+    
     const location = useLocation();
     const isModifyPage = location.pathname.includes('modify');
     const { id } = useParams()
@@ -148,6 +152,7 @@ function QuestionCreate() {
     })
 
     return (
+        
         <div className="container">
             <h5 className="my-3 border-bottom pb-2">질문등록</h5>
             <form onSubmit={create}>
@@ -193,7 +198,6 @@ function QuestionCreate() {
             <CategoryModal/>
 
         </div>
-
     )
 }
 

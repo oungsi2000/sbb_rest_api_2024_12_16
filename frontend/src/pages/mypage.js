@@ -1,5 +1,7 @@
 import { UserContext } from '../helper/getUserContext';
 import { useContext, useEffect, useState, useLayoutEffect} from 'react';
+import { Navigate } from 'react-router-dom';
+
 
 
 function Mypage() {
@@ -18,8 +20,8 @@ function Mypage() {
             setUserData(data)})
     }, [])
     
-    return (<>
-        {(user.role === "USER" && userData !== null) && <div class="container my-3">
+    return (
+        <div class="container my-3">
             <div class="container">
                 <h1 class="mt-4">마이페이지</h1>
 
@@ -77,9 +79,6 @@ function Mypage() {
                 {userData.user.oauthId == null && <a href="/change-password" id="changePasswordButton" class="btn btn-primary mt-3">비밀번호 변경</a>}        
             </div>
         </div>
-        }
-    </>
-
     )
 }
 

@@ -31,8 +31,7 @@ function SignupOAuth2() {
     };
 
     return (
-        <>
-            {user.role === "TEMPORARY_USER" && <div className="container my-3">
+            <div className="container my-3">
                 <div className="my-3 border-bottom">
                     <div>
                         <h4>회원가입</h4>
@@ -50,8 +49,7 @@ function SignupOAuth2() {
 
                     <button type="submit" className="btn btn-primary">회원가입</button>
                 </form>
-            </div>}
-        </>
+            </div>
     )
 }
 
