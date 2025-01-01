@@ -1,13 +1,11 @@
 package com.ll.jumptospringboot.global.auth.form;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.jumptospringboot.domain.User.UserRole;
-import com.ll.jumptospringboot.global.auth.standard.ResponseHelper;
+import com.ll.jumptospringboot.global.standard.ResponseHelper;
 import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

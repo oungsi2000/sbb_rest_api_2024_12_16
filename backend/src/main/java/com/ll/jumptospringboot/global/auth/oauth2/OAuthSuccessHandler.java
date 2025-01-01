@@ -5,7 +5,7 @@ import com.ll.jumptospringboot.domain.User.UserRepository;
 import com.ll.jumptospringboot.domain.User.UserRole;
 import com.ll.jumptospringboot.domain.User.UserService;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
-import com.ll.jumptospringboot.global.auth.standard.ResponseHelper;
+import com.ll.jumptospringboot.global.standard.ResponseHelper;
 import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

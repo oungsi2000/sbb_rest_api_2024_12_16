@@ -12,6 +12,7 @@ import ChangePassword from './pages/changePassword';
 import ResetPassword from './pages/resetPassword';
 import QuestionDetail from './pages/questionDetail';
 import QuestionCreate from './pages/questionCreate';
+import AnswerForm from './pages/answerForm'
 
 
 
@@ -47,6 +48,7 @@ function App() {
           <Route path="/question/detail/:id" element={<QuestionDetail />} />
           <Route path="/question/create" element={<QuestionCreate />}/>
           <Route path="/question/modify/:id" element={<QuestionCreate />}/>
+          <Route path="/answer/modify/:id" element={<AnswerForm/>}/>
           
         </Routes>
       </UserContext.Provider>

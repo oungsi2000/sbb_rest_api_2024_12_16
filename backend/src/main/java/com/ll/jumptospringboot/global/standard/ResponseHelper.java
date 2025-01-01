@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.global.auth.standard;
+package com.ll.jumptospringboot.global.standard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.jumptospringboot.global.auth.dto.AuthResponse;

@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.global.auth.standard;
+package com.ll.jumptospringboot.global.standard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

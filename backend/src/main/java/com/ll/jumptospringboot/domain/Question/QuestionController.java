@@ -1,9 +1,6 @@
 package com.ll.jumptospringboot.domain.Question;
 
-import com.ll.jumptospringboot.domain.Answer.dto.AnswerForm;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
-import com.ll.jumptospringboot.domain.Category.entity.Category;
-import com.ll.jumptospringboot.domain.Category.dto.CategoryForm;
 import com.ll.jumptospringboot.domain.Category.CategoryService;
 import com.ll.jumptospringboot.domain.Comment.dto.CommentForm;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
@@ -14,24 +11,18 @@ import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserRole;
 import com.ll.jumptospringboot.domain.User.UserService;
 import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
-import com.ll.jumptospringboot.global.auth.standard.BaseResponse;
+import com.ll.jumptospringboot.global.standard.BaseResponse;
 import com.ll.jumptospringboot.global.util.annotation.JwtAuthorize;
 import com.ll.jumptospringboot.global.util.annotation.JwtUserContext;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.security.Principal;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller

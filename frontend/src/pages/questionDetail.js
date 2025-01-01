@@ -171,10 +171,10 @@ function AnswerPaging(props) {
     return (
         <div className="d-flex justify-content-between align-items-center">
             <div>
-                <a href="?sortBy=present" className="sort btn btn-sm btn-outline-secondary">
+                <a href="/?sortBy=present" className="sort btn btn-sm btn-outline-secondary">
                     최신 순
                 </a>
-                <a href="?sortBy=mostVoted" className="sort btn btn-sm btn-outline-secondary">
+                <a href="/?sortBy=mostVoted" className="sort btn btn-sm btn-outline-secondary">
                     추천 순
                 </a>
             </div>
@@ -236,13 +236,13 @@ function AnswerCreateForm(props) {
                 setErr(result)
             } else {
                 setErr(null)
-                window.location = "/"
+                window.location = `http://localhost:3000/question/detail/${question.id}`
             }
           });
     }
     
       return (
-        <form action={`/api/answer/create/${question.id}`} method="post" className="my-3">
+        <form onSubmit={createAnswer} method="post" className="my-3">
             {err !== null && <div className="alert alert-danger" role="alert">
                 <div>{err.message}</div>
             </div>}
@@ -259,9 +259,40 @@ function Answercomment(props) {
     const loop = props.loop
     const answerComments = props.answerComments !== undefined ? props.answerComments : []
     const {user, setUser } = useContext(UserContext)
+    const [err, setErr] = useState(null)
+
+    const createAnswerComment = (e)=>{
+        e.preventDefault()
+        const form = e.target;
+        let originalResponse;
+
+        const formDataObj = new FormData(form);
+        const data = {};
+        for (let [key, value] of formDataObj.entries()) {
+          data[key] = value;
+        }
+
+        fetch(`/api/api/v1/answer/create/comment`, {
+            method: 'POST',
+            body: formDataObj // FormData 객체 직접 전송
+          })
+          .then(response => {
+            originalResponse = response;
+            return response.json()
+        })
+          .then(result => {
+            if (originalResponse.status !== 200) {
+                setErr(result)
+            } else {
+                setErr(null)
+                window.location = result.redirectUrl
+            }
+          });
+    }
+
     return (
         <div className={`comment-form mt-3 col-6 d-none answer-comment${loop}`} >
-            {user.role === "USER" && <form action="/answer/create/comment" method="post">
+            {user.role === "USER" && <form onSubmit={createAnswerComment}>
                 <input name="id" hidden value={answer.id} type="text"/>
                 <div className="d-flex justify-content-lg-between align-items-center">
                     <h4>댓글 작성</h4>
@@ -304,6 +335,22 @@ function QuestionDetail () {
             }
         })
     }
+
+    const deleteAnswer = async (answer) => {
+        const response = await fetch(`http://localhost:3000/api/api/v1/answer/delete/${answer.id}`,{
+            method : "GET"
+        })
+        const data = await response.json()
+        return data
+    }
+
+    const voteAnswer = async (answer) => {
+        const response = await fetch(`http://localhost:3000/api/api/v1/answer/vote/${answer.id}`,{
+            method : "GET"
+        })
+        const data = await response.json()
+        return data
+    }
     
     
     const getQuestionDetail = async ()=>{
@@ -318,15 +365,6 @@ function QuestionDetail () {
     }, [])
   
     useEffect(()=>{
-        const delete_elements = document.getElementsByClassName("delete");
-        Array.from(delete_elements).forEach(function(element) {
-            element.addEventListener('click', function() {
-                if(window.confirm("정말로 삭제하시겠습니까?")) {
-                    window.location.href = this.dataset.uri;
-                };
-            });
-        });
-
         const page_elements = document.getElementsByClassName("page-link");
         Array.from(page_elements).forEach(function(element) {
         element.addEventListener('click', function() {
@@ -335,6 +373,8 @@ function QuestionDetail () {
             });
         });
     }, [])
+
+    
     return (
        <>
        { questionDetail !== null && <div className="container my-3">
@@ -366,18 +406,33 @@ function QuestionDetail () {
                         </div>
                         <div className="my-3">
                             <button className="recommend btn btn-sm btn-outline-secondary"
-                            data-uri={`/answer/vote/${answer.id}`}>
+                            onClick={()=>{
+                                if (!window.confirm("정말로 추천하시겠습니까?")) {return}
+                                voteAnswer(answer).then(data=>{
+                                alert(data.message)
+                                window.location = `http://localhost:3000/question/detail/${questionDetail.question.id}`
+                                })}}>
                                 추천
                                 <span className="badge rounded-pill bg-success">{answer.voter}</span>
                             </button>
                             {(user.role === "USER" && 
                                 answer.author != null && 
                                 (user.name === answer.author.username || user.name === answer.author.email)) 
-                                && <a href={`/question/modify/${answer.id}`} className="btn btn-sm btn-outline-secondary">수정</a>}
+                                && <a href={`/answer/modify/${answer.id}`} className="btn btn-sm btn-outline-secondary">수정</a>}
 
                             {(user.role === "USER" && 
                             answer.author != null && 
-                            (user.name === answer.author.username || user.name === answer.author.email)) && <button data-uri={`/question/delete/${answer.id}`}
+                            (user.name === answer.author.username || user.name === answer.author.email)) && <button 
+                            onClick={
+                                ()=>{
+                                    if (!window.confirm("정말로 삭제하시겠습니까?")) {return}
+                                    deleteAnswer(answer)
+                                    .then(resposne => {
+                                        alert(resposne.message)
+                                        window.location = `http://localhost:3000/question/detail/${questionDetail.question.id}`
+                                    })
+                                }
+                            }
                             className="delete btn btn-sm btn-outline-secondary">삭제</button>}
                             <button className="btn btn-sm btn-outline-secondary" onClick={()=>showComment(loop)}>댓글</button>
                             <Answercomment answer={answer} loop={loop} answerComments={questionDetail.answerComments[answer.id]}/>
