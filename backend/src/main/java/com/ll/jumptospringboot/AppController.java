@@ -17,6 +17,7 @@ import com.ll.jumptospringboot.global.auth.password.ResetPasswordService;
 import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
 import com.ll.jumptospringboot.global.util.annotation.JwtAuthorize;
 import com.ll.jumptospringboot.global.util.JwtProvider;
+import com.ll.jumptospringboot.global.util.annotation.JwtUserContext;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -131,14 +132,15 @@ public class AppController {
     }
 
     @PostMapping("/signup/oauth")
-    public ResponseEntity<AuthResponse> oauthSignup(@Valid UserCreateOauthDto userCreateOauthDto, BindingResult bindingResult, Principal principal, HttpServletRequest request) {
+    public ResponseEntity<AuthResponse> oauthSignup(@Valid UserCreateOauthDto userCreateOauthDto,
+                                                    BindingResult bindingResult,
+                                                    @JwtUserContext UserContextDto userContextDto) {
 
         if (bindingResult.hasErrors()) {
             AuthResponse authResponse = new AuthResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage());
             return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
         try {
-            UserContextDto userContextDto = getUserContext(request);
             String email = userContextDto.getName();
             SiteUser user = userService.getUserByEmail(email);
             userCreateOauthDto.setEmail(email);
@@ -165,10 +167,9 @@ public class AppController {
 
     @JwtAuthorize(role=UserRole.USER)
     @PostMapping("/my-page")
-    public ResponseEntity<UserDataDto> myPage(HttpServletRequest request) {
+    public ResponseEntity<UserDataDto> myPage(@JwtUserContext UserContextDto userContextDto) {
         UserDataDto userDataDto = new UserDataDto();
-        UserContextDto userContext = getUserContext(request);
-        SiteUser user = userService.getUser(userContext.getName());
+        SiteUser user = userService.getUser(userContextDto.getName());
         List<QuestionDto> questions = questionService.getQuestionByUser(user);
         List<AnswerDto> answers = answerService.getAnswerByUser(user);
         List<CommentDto> comments = commentService.getCommentByUser(user);

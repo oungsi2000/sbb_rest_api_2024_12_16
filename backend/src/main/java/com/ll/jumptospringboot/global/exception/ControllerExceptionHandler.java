@@ -21,8 +21,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<AuthResponse> DataNotFoundExceptionHandler(DataNotFoundException e) {
         log.error("DataNotFoundException", e);
-        AuthResponse authResponse = new AuthResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(authResponse);
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(PasswordNotSameException.class)

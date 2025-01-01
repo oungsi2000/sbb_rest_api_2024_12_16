@@ -168,13 +168,25 @@ function AnswerPaging(props) {
     const lastButtonclassName = `page-item ${answers.last ? 'disabled' : ''}`;
     const firstDataPage = answers.number - 1
     const lastDataPage = answers.number + 1
+    const { id } = useParams()
+
+    useEffect(()=>{
+        const page_elements = document.getElementsByClassName("page-link");
+        Array.from(page_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+            });
+        });
+    }, [])
+
     return (
         <div className="d-flex justify-content-between align-items-center">
             <div>
-                <a href="/?sortBy=present" className="sort btn btn-sm btn-outline-secondary">
+                <a href={`http://localhost:3000/question/detail/${id}/?sortBy=present`} className="sort btn btn-sm btn-outline-secondary">
                     최신 순
                 </a>
-                <a href="/?sortBy=mostVoted" className="sort btn btn-sm btn-outline-secondary">
+                <a href= {`http://localhost:3000/question/detail/${id}/?sortBy=mostVoted`} className="sort btn btn-sm btn-outline-secondary">
                     추천 순
                 </a>
             </div>
@@ -202,6 +214,9 @@ function AnswerPaging(props) {
                         </button>
                     </li>
                 </ul>
+                <form method="get" id="searchForm">
+                    <input type="hidden" id="page" name="index" value={answers.number}/>
+                </form>
             </div>}
         </div>
     )
@@ -323,6 +338,8 @@ function QuestionDetail () {
     const { id } = useParams()
     const [questionDetail, setQuestionDetail] = useState(null)
     const {user, setUser } = useContext(UserContext)
+    const currentURL = new URL(window.location.href);
+
 
     const showComment = (index) => {
         const answerComment = document.getElementsByClassName("answer-comment"+index);
@@ -352,9 +369,21 @@ function QuestionDetail () {
         return data
     }
     
-    
+
     const getQuestionDetail = async ()=>{
-        const response = await fetch('http://localhost:3000/api/api/v1/question/detail/' + id, {
+        const index = currentURL.searchParams.get('index')
+        const sortBy = currentURL.searchParams.get('sortby')
+        let url = 'http://localhost:3000/api/api/v1/question/detail/' + id
+
+        if (index !== null) {
+            url += '?index=' + index
+        }
+
+        if (sortBy !== null) {
+            url += '?sortBy=' + sortBy
+        }
+
+        const response = await fetch(url, {
             method : "POST"
         })
         const data = await response.json()
@@ -364,15 +393,6 @@ function QuestionDetail () {
         getQuestionDetail().then(data => setQuestionDetail(data))
     }, [])
   
-    useEffect(()=>{
-        const page_elements = document.getElementsByClassName("page-link");
-        Array.from(page_elements).forEach(function(element) {
-        element.addEventListener('click', function() {
-            document.getElementById('page').value = this.dataset.page;
-            document.getElementById('searchForm').submit();
-            });
-        });
-    }, [])
 
     
     return (

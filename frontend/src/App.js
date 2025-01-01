@@ -18,8 +18,8 @@ import AnswerForm from './pages/answerForm'
 
 
 function App() {
-  
-  const [user, setUser] = useState({name:"null", role:"ANONYMOUS"});
+
+  const [user, setUser] = useState({ name: "null", role: "ANONYMOUS" });
   useEffect(() => {
     getUserContext().then((result => {
       setUser(result)
@@ -40,16 +40,18 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/signup-oauth" element={<SignupOAuth2 />}/>
-          <Route path="/my-page" element={<Mypage />}/>
-          <Route path="/" element={<List />}/>
-          <Route path="/change-password" element={<ChangePassword />}/>
-          <Route path="/reset-password" element={<ResetPassword />}/>
-          <Route path="/question/detail/:id" element={<QuestionDetail />} />
-          <Route path="/question/create" element={<QuestionCreate />}/>
-          <Route path="/question/modify/:id" element={<QuestionCreate />}/>
-          <Route path="/answer/modify/:id" element={<AnswerForm/>}/>
-          
+          <Route path="/signup-oauth" element={<SignupOAuth2 />} />
+          <Route path="/my-page" element={<Mypage />} />
+          <Route path="/" element={<List />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/question">
+            <Route path="detail/:id" element={<QuestionDetail />} />
+            <Route path="create" element={<QuestionCreate />} />
+            <Route path="modify/:id" element={<QuestionCreate />} />
+          </Route>
+          <Route path="/answer/modify/:id" element={<AnswerForm />} />
+
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>
