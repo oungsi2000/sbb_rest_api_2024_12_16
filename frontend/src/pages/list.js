@@ -138,7 +138,7 @@ function List() {
                 </thead>
                 <tbody>
                 {list.content.map((item, index)=>(
-                    <tr className="text-center">
+                    <tr className="text-center" key={index}>
                     <td>{list.totalElements - (list.number * list.size) - index}</td>
                     <td className="text-start">
                         <a href={`/question/detail/${item.id}`}>{item.title}</a>

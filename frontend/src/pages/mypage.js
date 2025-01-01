@@ -42,8 +42,8 @@ function Mypage() {
                             <div class="col-md-4">
                                 <h3>작성한 답변</h3>
                                 <ul id="userAnswers" class="list-unstyled">
-                                    {userData.answers.map((answer) => (
-                                        <li>
+                                    {userData.answers.map((answer, index) => (
+                                        <li key={index}>
                                             <a href={`/question/detail/${answer.questionId}`}>{answer.content}</a>
                                         </li>
                                     ))}
@@ -52,8 +52,8 @@ function Mypage() {
                             <div class="col-md-4">
                                 <h3>작성한 질문</h3>
                                 <ul id="userQuestions" class="list-unstyled">
-                                    {userData.questions.map(question => (
-                                        <li>
+                                    {userData.questions.map((question, index) => (
+                                        <li key={index}>
                                             <a href={`/question/detail/${question.id}`}>{question.title}</a>
                                         </li>
                                     ))}
@@ -62,8 +62,8 @@ function Mypage() {
                             <div class="col-md-4">
                                 <h3>작성한 댓글</h3>
                                 <ul id="userComments" class="list-unstyled">
-                                    {userData.comments.map(comment => (
-                                        <li>
+                                    {userData.comments.map((comment, index) => (
+                                        <li key={index}>
                                             {comment.questionId != null && <a href={`/question/detail/${comment.questionId}`}>{comment.content}</a>}
                                             {comment.answerId != null && <a href={`/question/detail/${comment.answerId}`}>{comment.content}</a>}
                                         </li>

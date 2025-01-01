@@ -1,17 +1,13 @@
 import { useState } from "react";
+import { event2FormData } from "../helper/event2FormData";
 
 function Login() {
     const [err, setErr] = useState(null)
     const login = (e)=> {
         e.preventDefault()
-        const form = e.target;
         let originalResponse;
 
-        const formDataObj = new FormData(form);
-        const data = {};
-        for (let [key, value] of formDataObj.entries()) {
-          data[key] = value;
-        }
+        const formDataObj = event2FormData(e)
 
         fetch('/api/api/v1/login', {
             method: 'POST',

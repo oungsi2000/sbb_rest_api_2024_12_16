@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../helper/getUserContext';
+import { event2FormData } from '../helper/event2FormData';
 
 
 function SignupOAuth2() {
@@ -7,15 +8,10 @@ function SignupOAuth2() {
     const [err, setErr] = useState(null)
     const signupOAuth2 = (e) => {
         e.preventDefault()
-        const form = e.target;
         let originalResponse;
 
-        const formDataObj = new FormData(form);
-        const data = {};
-        for (let [key, value] of formDataObj.entries()) {
-            data[key] = value;
-        }
-
+        const formDataObj = event2FormData(e)
+        
         fetch('/api/api/v1/signup/oauth', {
             method: 'POST',
             body: formDataObj // FormData 객체 직접 전송

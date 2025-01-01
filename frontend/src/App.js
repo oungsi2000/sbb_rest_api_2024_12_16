@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import axios from "axios";
 import Header from './components/header';
 import Login from "./pages/login"
 import Signup from './pages/signup';

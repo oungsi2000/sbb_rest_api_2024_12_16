@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from 'react-router-dom';
+import { rootUrl, restServerUrl } from "../static/urlContext";
+import { event2FormData } from "../helper/event2FormData";
 
 
 function CategoryModal() {
@@ -7,15 +9,10 @@ function CategoryModal() {
 
     const create = (e) => {
         e.preventDefault()
-        const form = e.target;
-        let url = ""
         let originalResponse;
 
-        const formDataObj = new FormData(form);
-        const data = {};
-        for (let [key, value] of formDataObj.entries()) {
-            data[key] = value;
-        }
+        const formDataObj = event2FormData(e)
+    
 
         fetch('/api/api/v1/category/create', {
             method: 'POST',
@@ -78,16 +75,11 @@ function QuestionCreate() {
 
     const create = (e) => {
         e.preventDefault()
-        const form = e.target;
         let originalResponse;
         let url = "";
 
-        const formDataObj = new FormData(form);
-        const data = {};
-        for (let [key, value] of formDataObj.entries()) {
-            data[key] = value;
-        }
-        
+        const formDataObj = event2FormData(e)
+
         if (isModifyPage) {
             url = `/api/api/v1/question/modify/${id}`
         } else {
@@ -111,7 +103,7 @@ function QuestionCreate() {
             });
     };
     const getCategories = async () => {
-        const response = await fetch('http://localhost:3000/api/api/v1/category/list', {
+        const response = await fetch(`${restServerUrl}/api/v1/category/list`, {
             method: "GET"
         })
         const data = await response.json()
@@ -120,7 +112,7 @@ function QuestionCreate() {
     const getPreviousContent = async () => {
 
         if (id === null) { return }
-        const response = await fetch(`http://localhost:3000/api/api/v1/question/modify/${id}`, {
+        const response = await fetch(`${restServerUrl}/api/v1/question/modify/${id}`, {
             method: "GET"
         })
         const data = await response.json()
@@ -177,8 +169,8 @@ function QuestionCreate() {
                         </li>
 
                         {categories !== null && categories.categories.map(
-                            category => (
-                                <li data-title={category.title} data-id={category.id} onClick={(e)=>{setCategory(e)}}>
+                            (category, index) => (
+                                <li key={index} data-title={category.title} data-id={category.id} onClick={(e)=>{setCategory(e)}}>
                                     <button type="button" className="dropdown-item">{category.title}</button>
                                 </li>
                             )
