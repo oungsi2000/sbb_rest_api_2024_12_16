@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.domain.password;
+package com.ll.jumptospringboot.global.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,8 @@
 package com.ll.jumptospringboot.domain.Comment;
 
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Comment.entity.Comment;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

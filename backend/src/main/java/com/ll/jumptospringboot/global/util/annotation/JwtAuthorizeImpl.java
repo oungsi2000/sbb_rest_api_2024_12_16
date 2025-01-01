@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.global.util;
+package com.ll.jumptospringboot.global.util.annotation;
 
 import com.ll.jumptospringboot.AppController;
 import com.ll.jumptospringboot.domain.User.UserRole;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import com.ll.jumptospringboot.AppController.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Aspect

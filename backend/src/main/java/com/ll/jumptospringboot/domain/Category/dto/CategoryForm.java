@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.domain.Category;
+package com.ll.jumptospringboot.domain.Category.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

@@ -10,6 +10,8 @@ import List from './pages/list';
 import Mypage from './pages/mypage';
 import ChangePassword from './pages/changePassword';
 import ResetPassword from './pages/resetPassword';
+import QuestionDetail from './pages/questionDetail';
+import QuestionCreate from './pages/questionCreate';
 
 
 
@@ -42,6 +44,10 @@ function App() {
           <Route path="/" element={<List />}/>
           <Route path="/change-password" element={<ChangePassword />}/>
           <Route path="/reset-password" element={<ResetPassword />}/>
+          <Route path="/question/detail/:id" element={<QuestionDetail />} />
+          <Route path="/question/create" element={<QuestionCreate />}/>
+          <Route path="/question/modify/:id" element={<QuestionCreate />}/>
+          
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>

@@ -1,11 +1,10 @@
-package com.ll.jumptospringboot.domain.Comment;
+package com.ll.jumptospringboot.domain.Comment.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 

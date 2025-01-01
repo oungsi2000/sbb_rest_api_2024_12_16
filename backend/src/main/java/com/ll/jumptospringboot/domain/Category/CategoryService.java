@@ -1,5 +1,7 @@
 package com.ll.jumptospringboot.domain.Category;
 
+import com.ll.jumptospringboot.domain.Category.dto.CategoryForm;
+import com.ll.jumptospringboot.domain.Category.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

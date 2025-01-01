@@ -1,6 +1,6 @@
 package com.ll.jumptospringboot;
 
-import com.ll.jumptospringboot.domain.Answer.Answer;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
 import com.ll.jumptospringboot.domain.Question.QuestionRepository;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
@@ -8,7 +8,7 @@ import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @SpringBootTest
 class JumpToSpringBootApplicationTests {
@@ -61,12 +60,5 @@ class JumpToSpringBootApplicationTests {
         System.out.println(question.getAnswerList().size());
     }
 
-    @Test
-    @DisplayName("추천순 정렬 테스트")
-    @Transactional
-    void t4() {
-        Question question = questionService.getQuestion(1);
-        Page<Answer> answerList = answerService.getList(question, 0, "mostVoted");
-        System.out.println(answerList.getTotalElements());
-    }
+
 }

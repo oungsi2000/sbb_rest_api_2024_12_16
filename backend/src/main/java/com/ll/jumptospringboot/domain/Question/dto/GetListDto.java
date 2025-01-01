@@ -1,8 +1,7 @@
-package com.ll.jumptospringboot.domain.Question;
+package com.ll.jumptospringboot.domain.Question.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

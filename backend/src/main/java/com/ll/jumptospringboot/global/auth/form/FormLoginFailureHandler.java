@@ -17,15 +17,15 @@ public class FormLoginFailureHandler implements AuthenticationFailureHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
-        if (exception instanceof BadCredentialsException) {
-            AuthResponse authResponse = new AuthResponse(exception.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
-            String jsonString = objectMapper.writeValueAsString(authResponse); // DTO를 JSON 문자열로 변환
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            PrintWriter writer = response.getWriter();
-            writer.print(jsonString);
-            writer.flush();
-        }
+
+        AuthResponse authResponse = new AuthResponse(exception.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+        String jsonString = objectMapper.writeValueAsString(authResponse); // DTO를 JSON 문자열로 변환
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.print(jsonString);
+        writer.flush();
+
     }
 }

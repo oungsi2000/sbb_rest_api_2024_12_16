@@ -1,12 +1,15 @@
 package com.ll.jumptospringboot.domain.Comment;
 
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentDto;
+import com.ll.jumptospringboot.domain.Comment.entity.Comment;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,7 +18,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final QuestionService questionService;
+    @Lazy
+    @Autowired
+    private QuestionService questionService;
     private final AnswerService answerService;
     private final CommentRepository commentRepository;
 
@@ -41,14 +46,14 @@ public class CommentService {
         return commentRepository.findAllByQuestion(question);
     }
 
-    public Map<Integer, List<Comment>> getAnswerComments(Question question) {
-        Map<Integer, List<Comment>> result = new HashMap<>();
+    public Map<Integer, List<CommentDto>> getAnswerComments(Question question) {
+        Map<Integer, List<CommentDto>> result = new HashMap<>();
         commentRepository.findAllAnswerComments(question).forEach(
             (it)->{
                 Integer answerId = (Integer) it[1];
                 Comment comment = (Comment) it[0];
                 result.putIfAbsent(answerId, new ArrayList<>());
-                result.get(answerId).add(comment);
+                result.get(answerId).add(toCommentDto(comment));
             }
         );
         return result;

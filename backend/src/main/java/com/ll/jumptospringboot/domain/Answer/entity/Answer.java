@@ -1,16 +1,14 @@
-package com.ll.jumptospringboot.domain.Answer;
+package com.ll.jumptospringboot.domain.Answer.entity;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter

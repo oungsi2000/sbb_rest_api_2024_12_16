@@ -1,8 +1,10 @@
 package com.ll.jumptospringboot.domain.Answer;
 
-import com.ll.jumptospringboot.domain.Comment.CommentForm;
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerForm;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentForm;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import com.ll.jumptospringboot.domain.User.UserService;

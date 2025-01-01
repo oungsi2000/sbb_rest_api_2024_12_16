@@ -1,9 +1,7 @@
-package com.ll.jumptospringboot.domain.Answer;
+package com.ll.jumptospringboot.domain.Answer.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
 import com.ll.jumptospringboot.domain.User.SiteUser;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,13 +1,13 @@
-package com.ll.jumptospringboot.domain.Question;
+package com.ll.jumptospringboot.domain.Question.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Category.Category;
-import com.ll.jumptospringboot.domain.Comment.Comment;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
+import com.ll.jumptospringboot.domain.Category.entity.Category;
+import com.ll.jumptospringboot.domain.Comment.entity.Comment;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import jakarta.persistence.*;
 

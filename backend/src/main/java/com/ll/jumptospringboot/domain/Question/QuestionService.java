@@ -1,18 +1,18 @@
 package com.ll.jumptospringboot.domain.Question;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
-import com.ll.jumptospringboot.domain.Answer.AnswerDto;
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerDto;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.domain.Comment.CommentDto;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentDto;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionDetailDto;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionDto;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionForm;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.global.exception.AlreadyVotedException;
-import com.ll.jumptospringboot.domain.Category.Category;
+import com.ll.jumptospringboot.domain.Category.entity.Category;
 import com.ll.jumptospringboot.domain.Category.CategoryRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -20,14 +20,11 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
-import com.ll.jumptospringboot.domain.Answer.Answer;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
 import com.ll.jumptospringboot.global.exception.DataNotFoundException;
 import com.ll.jumptospringboot.domain.User.SiteUser;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +35,9 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
+    private final AnswerService answerService;
+    private final CommentService commentService;
+
 
     private boolean isAlreadyVoted (SiteUser user, Question question) {
         Optional<Question> currentQuestion = questionRepository.findById(question.getId());
@@ -66,6 +66,17 @@ public class QuestionService {
             setView(question.get());
             question.get().getAnswerList().sort((a,b)->b.getVoter() - a.getVoter());
             return question.get();
+        } else {
+            throw new DataNotFoundException("question not found");
+        }
+    }
+
+    public QuestionDto getQuestionDto(Integer id) {
+        Optional<Question> question = questionRepository.findById(id);
+        if (question.isPresent()) {
+            setView(question.get());
+            question.get().getAnswerList().sort((a,b)->b.getVoter() - a.getVoter());
+            return toQuestionDto(question.get());
         } else {
             throw new DataNotFoundException("question not found");
         }
@@ -153,6 +164,22 @@ public class QuestionService {
         questionDto.setAnswerList(answerDtoList);
         questionDto.setComments(commentDtoList);
         return questionDto;
+    }
 
+    public QuestionDetailDto getQuestionDetailDto(Integer id, int idx, String sortBy) {
+        Question question = getQuestion(id);
+        Page<AnswerDto> answerList = answerService.getList(question, idx, sortBy);
+        List<CommentDto> questionComments = commentService.getQuestionComments(question).stream().map(
+            CommentService::toCommentDto
+        ).toList();
+        Map<Integer, List<CommentDto>> answerComments = commentService.getAnswerComments(question);
+
+        QuestionDetailDto questionDetailDto = new QuestionDetailDto();
+        questionDetailDto.setQuestion(toQuestionDto(question));
+        questionDetailDto.setAnswers(answerList);
+        questionDetailDto.setQuestionComments(questionComments);
+        questionDetailDto.setAnswerComments(answerComments);
+
+        return questionDetailDto;
     }
 }

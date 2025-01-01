@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.global.util;
+package com.ll.jumptospringboot.global.util.annotation;
 
 import com.ll.jumptospringboot.domain.User.UserRole;
 

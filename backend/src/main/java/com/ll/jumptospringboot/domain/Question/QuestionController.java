@@ -1,37 +1,42 @@
 package com.ll.jumptospringboot.domain.Question;
 
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Answer.AnswerForm;
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerForm;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
-import com.ll.jumptospringboot.domain.Category.Category;
-import com.ll.jumptospringboot.domain.Category.CategoryForm;
+import com.ll.jumptospringboot.domain.Category.entity.Category;
+import com.ll.jumptospringboot.domain.Category.dto.CategoryForm;
 import com.ll.jumptospringboot.domain.Category.CategoryService;
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.domain.Comment.CommentForm;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentForm;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionDetailDto;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionForm;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
+import com.ll.jumptospringboot.domain.User.UserRole;
 import com.ll.jumptospringboot.domain.User.UserService;
+import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
+import com.ll.jumptospringboot.global.auth.standard.BaseResponse;
+import com.ll.jumptospringboot.global.util.annotation.JwtAuthorize;
+import com.ll.jumptospringboot.global.util.annotation.JwtUserContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
+@RestController
+@RequestMapping("/api/v1/question")
 public class QuestionController {
     private final QuestionService service;
     private final UserService userService;
@@ -39,127 +44,97 @@ public class QuestionController {
     private final CommentService commentService;
     private final CategoryService categoryService;
 
-    @GetMapping(value = "/question/detail/{id}")
-    public String detail(Model model,
-                         @PathVariable("id") Integer id,
-                         AnswerForm answerForm,
-                         CommentForm commentForm,
+    @PostMapping(value = "/detail/{id}")
+    public QuestionDetailDto detail(@PathVariable("id") Integer id,
                          @RequestParam(value="index", defaultValue="0") int idx,
                          @RequestParam(value="sortBy", defaultValue="mostVoted") String sortBy) {
-        Question question = service.getQuestion(id);
-        Page<Answer> answerList = answerService.getList(question, idx, sortBy);
-        List<Comment> questionComments = commentService.getQuestionComments(question);
-        Map<Integer, List<Comment>> answerComments = commentService.getAnswerComments(question);
-
-        model.addAttribute("questionComments", questionComments);
-        model.addAttribute("answerComments", answerComments);
-        model.addAttribute("question", question);
-        model.addAttribute("answerList", answerList);
-        return "question_detail";
-    }
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/question/create")
-    public String questionCreate(QuestionForm questionForm, CategoryForm categoryForm, Model model) {
-        List<Category> categories = categoryService.getList();
-        model.addAttribute("categories", categories);
-        return "question_form";
+        return service.getQuestionDetailDto(id,idx,sortBy);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/question/modify/{id}")
-    public String questionModify(QuestionForm questionForm, CategoryForm categoryForm, Model model, @PathVariable("id") Integer id, Principal principal) {
+    @JwtAuthorize(role=UserRole.USER)
+    @GetMapping("/modify/{id}")
+    public ResponseEntity<QuestionForm> questionModify(@PathVariable("id") Integer id, @JwtUserContext UserContextDto userContextDto) {
         Question question = this.service.getQuestion(id);
-        if(!question.getAuthor().getUsername().equals(principal.getName())) {
+        if(!question.getAuthor().getUsername().equals(userContextDto.getName()) &&
+            !question.getAuthor().getEmail().equals(userContextDto.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
+        QuestionForm questionForm = new QuestionForm();
         questionForm.setSubject(question.getTitle());
         questionForm.setContent(question.getContent());
-        List<Category> categories = categoryService.getList();
-        model.addAttribute("categories", categories);
 
-        return "question_form";
+        return ResponseEntity.ok().body(questionForm);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/question/delete/{id}")
-    public String questionDelete(Principal principal, @PathVariable("id") Integer id, AnswerForm answerForm) {
+    @JwtAuthorize(role=UserRole.USER)
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<BaseResponse> questionDelete(@PathVariable("id") Integer id, @JwtUserContext UserContextDto userContextDto) {
         Question question = this.service.getQuestion(id);
-        if (!question.getAuthor().getUsername().equals(principal.getName())) {
+        if (!question.getAuthor().getUsername().equals(userContextDto.getName()) &&
+            !question.getAuthor().getEmail().equals(userContextDto.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
         this.service.delete(question);
-        return "redirect:/";
+        BaseResponse baseResponse = new BaseResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/question/vote/{id}")
-    public String questionVote(Principal principal, @PathVariable("id") Integer id) {
+    @JwtAuthorize(role=UserRole.USER)
+    @GetMapping("/vote/{id}")
+    public ResponseEntity<BaseResponse> questionVote(@JwtUserContext UserContextDto userContextDto, @PathVariable("id") Integer id) {
         Question question = this.service.getQuestion(id);
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser = this.userService.getUser(userContextDto.getName());
         this.service.vote(question, siteUser);
-        return String.format("redirect:/question/detail/%s", id);
+        BaseResponse baseResponse = new BaseResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/question/modify/{id}")
-    public String questionModify(@Valid QuestionForm questionForm,
-                                 CategoryForm categoryform,
-                                 BindingResult bindingResult,
-                                 Model model,
-                                 Principal principal, @PathVariable("id") Integer id) {
+    @JwtAuthorize(role=UserRole.USER)
+    @PostMapping("/modify/{id}")
+    public ResponseEntity<BaseResponse> questionModify(@Valid QuestionForm questionForm,
+                                 BindingResult bindingResult, @JwtUserContext UserContextDto userContextDto, @PathVariable("id") Integer id) {
         if (bindingResult.hasErrors()) {
-            List<Category> categories = categoryService.getList();
-            model.addAttribute("categories", categories);
-            return "question_form";
+            BaseResponse baseResponse = new BaseResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            return ResponseEntity.badRequest().body(baseResponse);
         }
         Question question = this.service.getQuestion(id);
-        if (!question.getAuthor().getUsername().equals(principal.getName())) {
+        if (!question.getAuthor().getUsername().equals(userContextDto.getName()) &&
+            !question.getAuthor().getEmail().equals(userContextDto.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         this.service.modify(question, questionForm.getSubject(), questionForm.getContent());
-        return String.format("redirect:/question/detail/%s", id);
+        BaseResponse baseResponse = new BaseResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/question/create")
-    public String questionCreate(@Valid QuestionForm questionForm,
-                                 BindingResult bindingResult,
-                                 CategoryForm categoryform,
-                                 Model model,
-                                 Principal principal) {
+    @JwtAuthorize(role=UserRole.USER)
+    @PostMapping("/create")
+    public ResponseEntity<BaseResponse> questionCreate(@Valid QuestionForm questionForm,
+                                                       BindingResult bindingResult,
+                                                       @JwtUserContext UserContextDto userContextDto) {
         if (bindingResult.hasErrors()) {
-            List<Category> categories = categoryService.getList();
-            model.addAttribute("categories", categories);
-            return "question_form";
+            BaseResponse baseResponse = new BaseResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            return ResponseEntity.badRequest().body(baseResponse);
         }
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser = this.userService.getUser(userContextDto.getName());
         this.service.create(questionForm, siteUser);
-        return "redirect:/"; // 질문 저장후 질문목록으로 이동
+        BaseResponse baseResponse = new BaseResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok().body(baseResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/question/create/comment")
-    public String questionComment(@Valid CommentForm commentForm,
+    @JwtAuthorize(role=UserRole.USER)
+    @PostMapping("/create/comment")
+    public ResponseEntity<BaseResponse> questionComment(@Valid CommentForm commentForm,
                                   BindingResult bindingResult,
-                                  Principal principal,
-                                  HttpServletRequest request) {
-        String referer = request.getHeader("Referer");
-
+                                  @JwtUserContext UserContextDto userContextDto) {
         if (bindingResult.hasErrors()) {
-            if (referer != null) {
-                return "redirect:" + referer;
-            } else {
-                return "redirect:/";
-            }
+            BaseResponse baseResponse = new BaseResponse(bindingResult.getAllErrors().getFirst().getDefaultMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            return ResponseEntity.badRequest().body(baseResponse);
         }
-        SiteUser siteUser = this.userService.getUser(principal.getName());
+        SiteUser siteUser = this.userService.getUser(userContextDto.getName());
         commentService.createQuestionComment(siteUser, commentForm.getContent(), commentForm.getId());
-        if (referer != null) {
-            return "redirect:" + referer;
-        } else {
-            return "redirect:/";
-        }
-        // 질문 저장후 질문목록으로 이동
+        BaseResponse baseResponse = new BaseResponse("성공", HttpServletResponse.SC_OK);
+        return ResponseEntity.ok().body(baseResponse);
     }
 }
 

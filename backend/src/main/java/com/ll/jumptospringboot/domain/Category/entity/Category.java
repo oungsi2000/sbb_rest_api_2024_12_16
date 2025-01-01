@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.domain.Category;
+package com.ll.jumptospringboot.domain.Category.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

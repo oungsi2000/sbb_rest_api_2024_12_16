@@ -1,4 +1,4 @@
-package com.ll.jumptospringboot.domain.Answer;
+package com.ll.jumptospringboot.domain.Answer.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 

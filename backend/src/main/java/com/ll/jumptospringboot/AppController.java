@@ -1,24 +1,21 @@
 package com.ll.jumptospringboot;
 
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Answer.AnswerDto;
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerDto;
 import com.ll.jumptospringboot.domain.Answer.AnswerService;
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.domain.Comment.CommentDto;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentDto;
 import com.ll.jumptospringboot.domain.Comment.CommentService;
-import com.ll.jumptospringboot.domain.Question.GetListDto;
-import com.ll.jumptospringboot.domain.Question.Question;
-import com.ll.jumptospringboot.domain.Question.QuestionDto;
+import com.ll.jumptospringboot.domain.Question.dto.GetListDto;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
+import com.ll.jumptospringboot.domain.Question.dto.QuestionDto;
 import com.ll.jumptospringboot.domain.Question.QuestionService;
 import com.ll.jumptospringboot.domain.User.*;
 import com.ll.jumptospringboot.global.auth.dto.AuthResponse;
 import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateDto;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
-import com.ll.jumptospringboot.domain.password.ResetPasswordService;
-import com.ll.jumptospringboot.domain.password.UserResetPasswordDto;
+import com.ll.jumptospringboot.global.auth.password.ResetPasswordService;
 import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
-import com.ll.jumptospringboot.global.util.JwtAuthorize;
+import com.ll.jumptospringboot.global.util.annotation.JwtAuthorize;
 import com.ll.jumptospringboot.global.util.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -188,30 +182,21 @@ public class AppController {
 
 
     @PostMapping("/reset-password")
-    public Map<String, String> resetPassword(@RequestParam(value = "email") String email) {
-        try {
-            return resetPasswordService.generateTempPassword(email);
-        } catch (UsernameNotFoundException e) {
-            //TODO 전역 예외 처리를 통해 실패했으면 400 던지도록 하기
-           throw new UsernameNotFoundException("유저를 찾을 수 없습니다");
-        }
+    public ResponseEntity<AuthResponse> resetPassword(@RequestParam(value = "email") String email) {
+        return resetPasswordService.generateTempPassword(email);
     }
 
     @JwtAuthorize(role=UserRole.USER)
     @PostMapping("/change-password")
-    public Map<String, String> changePassword(@RequestParam(value="password") String password,
+    public ResponseEntity<AuthResponse> changePassword(@RequestParam(value="password") String password,
                                               @RequestParam(value="newPassword") String newPassword,
                                               @RequestParam(value="newPasswordConfirm") String newPasswordConfirm,
                                               HttpServletRequest request
                                ) {
         UserContextDto userContext = getUserContext(request);
         SiteUser user = userRepository.findByusername(userContext.getName()).get();
-        try {
-            return resetPasswordService.changePassword(password, newPassword, user);
-        } catch (PasswordNotSameException e) {
-            //TODO 전역 예외 처리를 통해 실패했으면 400 던지도록 하기
-            throw new PasswordNotSameException("비밀번호가 일치하지 않습니다");
-        }
+        return resetPasswordService.changePassword(password, newPassword, user);
+
     }
 }
 

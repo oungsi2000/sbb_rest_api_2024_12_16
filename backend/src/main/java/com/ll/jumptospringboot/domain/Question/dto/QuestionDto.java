@@ -1,16 +1,11 @@
-package com.ll.jumptospringboot.domain.Question;
+package com.ll.jumptospringboot.domain.Question.dto;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Answer.AnswerDto;
-import com.ll.jumptospringboot.domain.Category.Category;
-import com.ll.jumptospringboot.domain.Comment.Comment;
-import com.ll.jumptospringboot.domain.Comment.CommentDto;
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerDto;
+import com.ll.jumptospringboot.domain.Category.entity.Category;
+import com.ll.jumptospringboot.domain.Comment.dto.CommentDto;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
-import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;

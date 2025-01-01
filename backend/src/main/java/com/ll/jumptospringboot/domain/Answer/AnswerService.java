@@ -1,8 +1,10 @@
 package com.ll.jumptospringboot.domain.Answer;
 
+import com.ll.jumptospringboot.domain.Answer.dto.AnswerDto;
+import com.ll.jumptospringboot.domain.Answer.entity.Answer;
 import com.ll.jumptospringboot.global.exception.AlreadyVotedException;
 import com.ll.jumptospringboot.global.exception.DataNotFoundException;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Question.entity.Question;
 import com.ll.jumptospringboot.domain.User.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -65,18 +67,20 @@ public class AnswerService {
         this.answerRepository.save(answer);
     }
 
-    public Page<Answer> getList(Question question, int page, String sortBy) {
+    public Page<AnswerDto> getList(Question question, int page, String sortBy) {
         List<Sort.Order> sorts = new ArrayList<>();
         if (Objects.equals(sortBy, "mostVoted")) {
             sorts.add(Sort.Order.desc("voter"));
             sorts.add(Sort.Order.desc("createDate"));
-            Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
-            return this.answerRepository.findAllByQuestion(question, pageable);
+
         } else {
             sorts.add(Sort.Order.desc("createDate"));
-            Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
-            return this.answerRepository.findAllByQuestion(question, pageable);
         }
+        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
+        Page<Answer> entityPage = this.answerRepository.findAllByQuestion(question, pageable);
+        List<AnswerDto> dtoList = entityPage.getContent().stream()
+            .map(AnswerService::toAnswerDto).toList();
+        return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
     public List<AnswerDto> getAnswerByUser(SiteUser user) {

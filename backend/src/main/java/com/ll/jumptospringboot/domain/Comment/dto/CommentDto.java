@@ -1,12 +1,8 @@
-package com.ll.jumptospringboot.domain.Comment;
+package com.ll.jumptospringboot.domain.Comment.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ll.jumptospringboot.domain.Answer.Answer;
-import com.ll.jumptospringboot.domain.Question.Question;
+import com.ll.jumptospringboot.domain.Comment.entity.Comment;
 import com.ll.jumptospringboot.domain.User.SiteUser;
-import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
