@@ -57,12 +57,9 @@ public class QuestionService {
         }
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        if (kw != null) {
-            Specification<Question> spec = search(kw);
-            return this.questionRepository.findAll(spec, pageable);
-        } else {
-            return this.questionRepository.findAll(pageable);
-        }
+
+        return this.questionRepository.findAll(pageable, kw);
+
 
     }
 
@@ -116,6 +113,9 @@ public class QuestionService {
     }
 
     //검색 쿼리 CriteriaBuilder로 빌드
+    /**
+     * &#064;Deprecated 기존 criteriaBuilder에서 jpql로 가져오는 방식으로 변경
+     */
     private Specification<Question> search(String kw) {
         return new Specification<>() {
             private static final long serialVersionUID = 1L;

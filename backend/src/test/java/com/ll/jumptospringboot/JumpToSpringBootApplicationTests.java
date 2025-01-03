@@ -30,11 +30,14 @@ class JumpToSpringBootApplicationTests {
 
     @Test
     void contextLoads() {
-        Question q1 = new Question();
-        q1.setTitle("sbb가 무엇인가요?");
-        q1.setContent("sbb에 대해서 알고 싶습니다.");
-        q1.setCreateDate(LocalDateTime.now());
-        this.questionRepository.save(q1);  // 첫번째 질문 저장
+        for (int i = 1; i <= 50000; i++) {
+            Question q1 = new Question();
+            q1.setTitle("sbb가 무엇인가요?");
+            q1.setContent("sbb에 대해서 알고 싶습니다.");
+            q1.setCreateDate(LocalDateTime.now());
+            this.questionRepository.save(q1);
+        }
+
     }
 
     @Test
