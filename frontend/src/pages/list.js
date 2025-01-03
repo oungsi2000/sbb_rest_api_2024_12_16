@@ -110,8 +110,8 @@ function List() {
             sortBy:sortBy 
           };
 
-        const response = await fetch("api/api/v1/list", {
-            method: 'POST',
+        const response = await fetch("api/api/v1/question-list", {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },

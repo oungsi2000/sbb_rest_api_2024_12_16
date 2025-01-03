@@ -30,7 +30,7 @@ class JumpToSpringBootApplicationTests {
 
     @Test
     void contextLoads() {
-        for (int i = 1; i <= 50000; i++) {
+        for (int i = 1; i <= 200000; i++) {
             Question q1 = new Question();
             q1.setTitle("sbb가 무엇인가요?");
             q1.setContent("sbb에 대해서 알고 싶습니다.");

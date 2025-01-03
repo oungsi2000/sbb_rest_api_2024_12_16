@@ -61,7 +61,7 @@ public class AppController {
             .build();
     }
 
-    @PostMapping("/list")
+    @GetMapping("/question-list")
     public ResponseEntity<Page<Question>> root(@RequestBody GetListDto getListDto) {
         int page = getListDto.getPage();
         String kw = getListDto.getKw() != null ? getListDto.getKw() : "";
@@ -83,12 +83,6 @@ public class AppController {
                     authentication = cookie.getValue();
                 }
             }
-        }
-
-        if (authentication == null){
-            userContextDto.setName("null");
-            userContextDto.setRole(UserRole.ANONYMOUS);
-            return userContextDto;
         }
         try {
             return jwtProvider.validate(authentication);
