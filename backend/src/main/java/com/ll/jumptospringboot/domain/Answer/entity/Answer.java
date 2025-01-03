@@ -10,6 +10,7 @@ import com.ll.jumptospringboot.domain.User.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionPhase;
@@ -18,6 +19,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Getter
 @Setter
 @Entity
+@BatchSize(size=50)
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

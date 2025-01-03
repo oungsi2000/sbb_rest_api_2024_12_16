@@ -9,10 +9,12 @@ import jakarta.persistence.Id;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 @Getter
 @Setter
 @Entity
+@BatchSize(size=50)
 public class SiteUser {
 
     @Id

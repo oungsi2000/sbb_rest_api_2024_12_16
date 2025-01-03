@@ -45,6 +45,7 @@ public class QuestionService {
         return currentQuestion.get().getVoterInfo().contains(user);
     }
 
+    //Todo voterInfo 가져올 때 n+1 문제 해결, CriteriaBuilder와 결합
     public Page<Question> getList(int page, String kw, String sortBy) {
         List<Sort.Order> sorts = new ArrayList<>();
         if (Objects.equals(sortBy, "recent-answer")) {
