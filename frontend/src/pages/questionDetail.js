@@ -83,7 +83,7 @@ function Question(props) {
 
     const voteQuestion = async () => {
         const response = await fetch(`${restServerUrl}/api/v1/question/vote/${question.id}`, {
-            method: "GET"
+            method: "POST"
         })
         const data = await response.json()
         return data
@@ -357,7 +357,7 @@ function AnswerControllButtons(props) {
 
     const voteAnswer = async (answer) => {
         const response = await fetch(`${restServerUrl}/api/v1/answer/vote/${answer.id}`, {
-            method: "GET"
+            method: "POST"
         })
         const data = await response.json()
         return data
@@ -440,7 +440,6 @@ function QuestionDetail() {
     useEffect(() => {
         getQuestionDetail().then(data => setQuestionDetail(data))
     }, [])
-
 
 
     return (

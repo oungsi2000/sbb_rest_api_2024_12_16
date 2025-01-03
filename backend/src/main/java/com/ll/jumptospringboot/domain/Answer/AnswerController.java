@@ -52,7 +52,7 @@ public class AnswerController {
     }
 
     @JwtAuthorize(role=UserRole.USER)
-    @GetMapping("/vote/{id}")
+    @PostMapping("/vote/{id}")
     public ResponseEntity<AnswerRedirectDto> answerVote(@JwtUserContext UserContextDto userContextDto, @PathVariable("id") Integer id) {
         Answer answer = this.answerService.getAnswer(id);
         SiteUser siteUser = this.userService.getUser(userContextDto.getName());

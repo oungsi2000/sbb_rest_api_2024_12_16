@@ -16,7 +16,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<AuthResponse> AlreadyVotedExceptionHandler(AlreadyVotedException e) {
         log.error("AlreadyVotedException", e);
         AuthResponse authResponse = new AuthResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(authResponse);
+        return ResponseEntity.ok().body(authResponse);
     }
 
     @ExceptionHandler(DataNotFoundException.class)

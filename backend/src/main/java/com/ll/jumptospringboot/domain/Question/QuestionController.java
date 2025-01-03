@@ -71,7 +71,7 @@ public class QuestionController {
     }
 
     @JwtAuthorize(role=UserRole.USER)
-    @GetMapping("/vote/{id}")
+    @PostMapping("/vote/{id}")
     public ResponseEntity<BaseResponse> questionVote(@JwtUserContext UserContextDto userContextDto, @PathVariable("id") Integer id) {
         Question question = this.service.getQuestion(id);
         SiteUser siteUser = this.userService.getUser(userContextDto.getName());

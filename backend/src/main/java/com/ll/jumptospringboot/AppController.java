@@ -14,6 +14,7 @@ import com.ll.jumptospringboot.global.auth.dto.UserContextDto;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateDto;
 import com.ll.jumptospringboot.global.auth.dto.UserCreateOauthDto;
 import com.ll.jumptospringboot.global.auth.password.ResetPasswordService;
+import com.ll.jumptospringboot.global.exception.DataNotFoundException;
 import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
 import com.ll.jumptospringboot.global.util.annotation.JwtAuthorize;
 import com.ll.jumptospringboot.global.util.JwtProvider;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -195,7 +197,12 @@ public class AppController {
                                               HttpServletRequest request
                                ) {
         UserContextDto userContext = getUserContext(request);
-        SiteUser user = userRepository.findByusername(userContext.getName()).get();
+
+        Optional<SiteUser> userOptional =  userRepository.findByusername(userContext.getName());
+        if (userOptional.isEmpty()) {
+            throw new DataNotFoundException("유저를 찾을 수 없습니다");
+        }
+        SiteUser user = userOptional.get();
         return resetPasswordService.changePassword(password, newPassword, user);
 
     }
