@@ -7,6 +7,7 @@ import com.ll.jumptospringboot.global.exception.PasswordNotSameException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,9 +28,12 @@ public class ResetPasswordService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    @Lazy
+    private ResetPasswordService self;
 
     @Async
-    protected void mailSender(String email, String tempPassword) {
+    public void mailSender(String email, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("임시 비밀번호 발송");
@@ -38,13 +42,14 @@ public class ResetPasswordService {
     }
 
     public ResponseEntity<AuthResponse> generateTempPassword(String email){
+
         Optional<SiteUser> user = userRepository.findByEmail(email);
         if (user.isEmpty()) throw new UsernameNotFoundException("유저를 찾을 수 없습니다");
         String password = UUID.randomUUID().toString().substring(0, 8);
         user.get().setPassword(passwordEncoder.encode(password));
         userRepository.save(user.get());
 
-        mailSender(email, password);
+        self.mailSender(email, password);
         AuthResponse authResponse = new AuthResponse("성공", HttpServletResponse.SC_OK);
 
         return ResponseEntity.ok().body(authResponse);
